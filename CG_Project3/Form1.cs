@@ -59,6 +59,9 @@ namespace CG_Project3
                             case 'L':
                                 Shapes.Add(new Line(elements[1]));
                                 break;
+                            case 'C':
+                                Shapes.Add(new Circle(elements[1]));
+                                break;
                         }
                     }
                 }

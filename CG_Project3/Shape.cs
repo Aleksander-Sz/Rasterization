@@ -13,8 +13,8 @@ namespace CG_Project3
     }
     internal class Line : IShape
     {
-        Point a, b;
-        Color color;
+        public Point a, b;
+        public Color color;
         public Line(Point a, Point b, Color color)
         {
             this.a = a;
@@ -35,6 +35,33 @@ namespace CG_Project3
         public override string ToString()
         {
             return "L;" + a.X.ToString() + "," + a.Y.ToString() + "," + b.X.ToString() + "," + b.Y.ToString() + "," + string.Format("{0:x6}", color.ToArgb());
+        }
+    }
+    internal class Circle : IShape
+    {
+        public Point center;
+        public int radius;
+        public Color color;
+        public Circle(Point center, int radius, Color color)
+        {
+            this.center = center;
+            this.radius = radius;
+            this.color = color;
+        }
+        public Circle(string text)
+        {
+            string[] elements = text.Split(',');
+            center = new Point(Int32.Parse(elements[0]), Int32.Parse(elements[1]));
+            radius = Int32.Parse(elements[2]);
+            color = Color.FromArgb(Convert.ToInt32(elements[3], 16));
+        }
+        public void Draw(byte[] bitmap)
+        {
+            ;
+        }
+        public override string ToString()
+        {
+            return "C;" + center.X.ToString() + "," + center.Y.ToString() + "," + radius.ToString() + "," + string.Format("{0:x6}", color.ToArgb());
         }
     }
 }
