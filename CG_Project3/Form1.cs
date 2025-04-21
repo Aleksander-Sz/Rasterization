@@ -57,10 +57,7 @@ namespace CG_Project3
                         switch (elements[0][0])
                         {
                             case 'L':
-                                Point a = new Point(Int32.Parse(elements[1]), Int32.Parse(elements[2]));
-                                Point b = new Point(Int32.Parse(elements[3]), Int32.Parse(elements[4]));
-                                Color color = Color.FromArgb(Convert.ToInt32(elements[5],16));
-                                Shapes.Add(new Line(a, b, color));
+                                Shapes.Add(new Line(elements[1]));
                                 break;
                         }
                     }
