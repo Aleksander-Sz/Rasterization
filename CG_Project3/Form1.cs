@@ -10,7 +10,8 @@ namespace CG_Project3
         public Form1()
         {
             InitializeComponent();
-            Image = null;
+            Image = new Bitmap(pictureBox.Width, pictureBox.Height);
+            pictureBox.Image = Image;
             Shapes = new List<IShape>();
             Shapes.Add(new Line(new Point(5, 10), new Point(14, 17), Color.FromArgb(255, 255, 255, 255)));
         }
@@ -35,7 +36,7 @@ namespace CG_Project3
                 }
                 catch (Exception exception)
                 {
-                    MessageBox.Show("Error saving the image: " + exception.Message);
+                    MessageBox.Show("Error saving the vector data: " + exception.Message);
                 }
             }
         }
@@ -67,7 +68,32 @@ namespace CG_Project3
                 }
                 catch (Exception exception)
                 {
-                    MessageBox.Show("Error loading the image: " + exception.Message);
+                    MessageBox.Show("Error loading the vector data: " + exception.Message);
+                }
+            }
+        }
+
+        private void clearToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Shapes.Clear();
+            Image = new Bitmap(pictureBox.Width, pictureBox.Height);
+            pictureBox.Image = Image;
+        }
+
+        private void exportImageToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "PNG Image|*.png|JPEG Image|*.jpg|Bitmap Image|*.bmp";
+            saveFileDialog.Title = "Save Image As";
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    Image.Save(saveFileDialog.FileName);
+                }
+                catch (Exception exception)
+                {
+                    MessageBox.Show("Error exporting the image: " + exception.Message);
                 }
             }
         }

@@ -33,6 +33,8 @@
             fileToolStripMenuItem = new ToolStripMenuItem();
             saveToolStripMenuItem = new ToolStripMenuItem();
             loadFileToolStripMenuItem = new ToolStripMenuItem();
+            clearToolStripMenuItem = new ToolStripMenuItem();
+            exportImageToolStripMenuItem = new ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)pictureBox).BeginInit();
             menuStrip1.SuspendLayout();
             SuspendLayout();
@@ -58,7 +60,7 @@
             // 
             // fileToolStripMenuItem
             // 
-            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { saveToolStripMenuItem, loadFileToolStripMenuItem });
+            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { saveToolStripMenuItem, loadFileToolStripMenuItem, clearToolStripMenuItem, exportImageToolStripMenuItem });
             fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             fileToolStripMenuItem.Size = new Size(46, 24);
             fileToolStripMenuItem.Text = "File";
@@ -76,6 +78,20 @@
             loadFileToolStripMenuItem.Size = new Size(224, 26);
             loadFileToolStripMenuItem.Text = "Load File";
             loadFileToolStripMenuItem.Click += loadFileToolStripMenuItem_Click;
+            // 
+            // clearToolStripMenuItem
+            // 
+            clearToolStripMenuItem.Name = "clearToolStripMenuItem";
+            clearToolStripMenuItem.Size = new Size(224, 26);
+            clearToolStripMenuItem.Text = "Clear";
+            clearToolStripMenuItem.Click += clearToolStripMenuItem_Click;
+            // 
+            // exportImageToolStripMenuItem
+            // 
+            exportImageToolStripMenuItem.Name = "exportImageToolStripMenuItem";
+            exportImageToolStripMenuItem.Size = new Size(224, 26);
+            exportImageToolStripMenuItem.Text = "Export Image";
+            exportImageToolStripMenuItem.Click += exportImageToolStripMenuItem_Click;
             // 
             // Form1
             // 
@@ -101,5 +117,7 @@
         private ToolStripMenuItem fileToolStripMenuItem;
         private ToolStripMenuItem saveToolStripMenuItem;
         private ToolStripMenuItem loadFileToolStripMenuItem;
+        private ToolStripMenuItem clearToolStripMenuItem;
+        private ToolStripMenuItem exportImageToolStripMenuItem;
     }
 }
