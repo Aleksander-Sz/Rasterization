@@ -13,7 +13,23 @@ namespace CG_Project3
             Image = new Bitmap(pictureBox.Width, pictureBox.Height);
             pictureBox.Image = Image;
             Shapes = new List<IShape>();
-            Shapes.Add(new Line(new Point(5, 10), new Point(14, 17), Color.FromArgb(255, 255, 255, 255)));
+            Shapes.Add(new Line(new Point(400, 200), new Point(100, 50), Color.FromArgb(255, 255, 255, 255)));
+            DrawShapes();
+        }
+
+        public void DrawShapes()
+        {
+            int stride;
+            byte[] ImageBytes = Program.ImageToByteArray(Image, out stride);
+            foreach (IShape shape in Shapes)
+            {
+                shape.Draw(ImageBytes, stride);
+            }
+            int width = Image.Width;
+            int height = Image.Height;
+            Image.Dispose();
+            Image = Program.ByteArrayToImage(ImageBytes, width, height, stride);
+            pictureBox.Image = Image;
         }
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)

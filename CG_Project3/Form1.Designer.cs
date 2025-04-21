@@ -45,6 +45,7 @@
             pictureBox.Location = new Point(12, 31);
             pictureBox.Name = "pictureBox";
             pictureBox.Size = new Size(776, 369);
+            pictureBox.SizeMode = PictureBoxSizeMode.CenterImage;
             pictureBox.TabIndex = 0;
             pictureBox.TabStop = false;
             // 
