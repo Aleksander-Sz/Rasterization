@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CG_Project3
 {
@@ -103,21 +105,33 @@ namespace CG_Project3
         Point a, b;
         int width;
         Color color;
+        int[,] brush;
         public ThickLine(Point a, Point b, int width, Color color)
         {
             this.a = a;
             this.b = b;
             this.width = width;
             this.color = color;
+            brush = new int[width,width];
+            for (int xo = 0; xo < this.width; xo++)
+            {
+                for (int yo = 0; yo < this.width; yo++)
+                {
+                    if ((xo - (width / 2)) * (xo - (width / 2)) + (yo - (width / 2)) * (yo - (width / 2)) <= width * width / 4)
+                    {
+                        brush[xo, yo] = 1;
+                    }
+                    else
+                        brush[xo, yo] = 0;
+                }
+            }
         }
-        public ThickLine(string text)
-        {
-            string[] elements = text.Split(',');
-            a = new Point(Int32.Parse(elements[0]), Int32.Parse(elements[1]));
-            b = new Point(Int32.Parse(elements[2]), Int32.Parse(elements[3]));
-            width = Int32.Parse(elements[4]);
-            color = Color.FromArgb(Convert.ToInt32(elements[5], 16));
-        }
+        public ThickLine(string text) : this(
+            new Point(Int32.Parse(text.Split(',')[0]), Int32.Parse(text.Split(',')[1])),
+            new Point(Int32.Parse(text.Split(',')[2]), Int32.Parse(text.Split(',')[3])),
+            Int32.Parse(text.Split(',')[4]),
+            Color.FromArgb(Convert.ToInt32(text.Split(',')[5], 16)))
+        { }
         public void Draw(byte[] bitmap, int stride)
         {
             int x = this.a.X;
@@ -147,11 +161,7 @@ namespace CG_Project3
                         d = d + dy - dx;
                         y += sy;
                     }
-                    for (int j = -width; j <= this.width; j++)
-                    {
-                        i = (y + j) * stride + x * 3;
-                        PixelSet(bitmap, i, this.color);
-                    }
+                    StampBrush(bitmap, stride, x, y);
                 }
             }
             else
@@ -173,17 +183,13 @@ namespace CG_Project3
                         d = d + dx - dy;
                         x += sx;
                     }
-                    for (int j = -width; j <= this.width; j++)
-                    {
-                        i = y * stride + (x + j) * 3;
-                        PixelSet(bitmap, i, this.color);
-                    }
+                    StampBrush(bitmap, stride, x, y);
                 }
             }
         }
         public override string ToString()
         {
-            return "L;" + a.X.ToString() + "," + a.Y.ToString() + "," + b.X.ToString() + "," + b.Y.ToString() + "," + width.ToString() + "," + string.Format("{0:x6}", color.ToArgb());
+            return "T;" + a.X.ToString() + "," + a.Y.ToString() + "," + b.X.ToString() + "," + b.Y.ToString() + "," + width.ToString() + "," + string.Format("{0:x6}", color.ToArgb());
         }
         private void PixelSet(byte[] pictureData, int i, Color c)
         {
@@ -192,6 +198,19 @@ namespace CG_Project3
             pictureData[i] = (byte)c.B;
             pictureData[i + 1] = (byte)c.G;
             pictureData[i + 2] = (byte)c.R;
+        }
+        private void StampBrush(byte[] bitmap, int stride, int x, int y)
+        {
+            int i;
+            for (int xo = 0; xo < this.width; xo++)
+            {
+                for (int yo = 0; yo < this.width; yo++)
+                {
+                    i = (y + yo - width/2) * stride + (x + xo - width/2) * 3;
+                    if (brush[xo,yo]==1)
+                        PixelSet(bitmap, i, this.color);
+                }
+            }
         }
     }
     internal class Circle : IShape

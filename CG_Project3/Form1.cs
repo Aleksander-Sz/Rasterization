@@ -16,6 +16,7 @@ namespace CG_Project3
             Shapes.Add(new Line(new Point(400, 200), new Point(100, 50), Color.FromArgb(255, 0, 255, 0)));
             Shapes.Add(new Line(new Point(600, 300), new Point(400, 50), Color.FromArgb(255, 255, 0, 0)));
             Shapes.Add(new ThickLine(new Point(0, 0), new Point(400, 50), 5, Color.FromArgb(255, 0, 0, 100)));
+            Shapes.Add(new ThickLine(new Point(100, 100), new Point(100, 100), 15, Color.FromArgb(255, 0, 0, 100)));
             DrawShapes();
         }
 
@@ -78,6 +79,9 @@ namespace CG_Project3
                         {
                             case 'L':
                                 Shapes.Add(new Line(elements[1]));
+                                break;
+                            case 'T':
+                                Shapes.Add(new ThickLine(elements[1]));
                                 break;
                             case 'C':
                                 Shapes.Add(new Circle(elements[1]));
