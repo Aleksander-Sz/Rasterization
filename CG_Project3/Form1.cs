@@ -30,6 +30,7 @@ namespace CG_Project3
             Shapes.Add(new ThickLine(new Point(0, 0), new Point(400, 50), 5, Color.FromArgb(255, 0, 0, 100)));
             Shapes.Add(new ThickLine(new Point(100, 100), new Point(100, 100), 15, Color.FromArgb(255, 0, 0, 100)));
             Shapes.Add(new Circle(new Point(500, 250), 30, Color.FromArgb(255, 100, 100, 100)));
+            Shapes.Add(new AALine(new Point(100, 300), new Point(600,400),10,Color.FromArgb(255,255,0,255)));
             DrawShapes();
         }
 
@@ -102,6 +103,9 @@ namespace CG_Project3
                             case 'P':
                                 Shapes.Add(new Polygon(elements[1]));
                                 break;
+                            case 'A':
+                                Shapes.Add(new AALine(elements[1]));
+                                break;
                         }
                     }
                 }
@@ -173,6 +177,7 @@ namespace CG_Project3
                         int radius = (int)Math.Sqrt((double)(dx * dx + dy * dy));
                         Shapes.Add(new Circle((Point)prevPoints[0], radius, currentColor));
                         prevPoints.Clear();
+                        label1.Text = "Select the first point.";
                         break;
                     case 3: // polygon
                         prevPoints.Add(new Point(x, y));
@@ -187,10 +192,17 @@ namespace CG_Project3
                         {
 
                             ((Polygon)Shapes.Last()).Closed = true;
+                            prevPoints.Clear();
+                            label1.Text = "Select the first point.";
                             break;
                         }
                         else
                             ((Polygon)Shapes.Last()).Add(new Point(x, y));
+                        break;
+                    case 4:
+                        Shapes.Add(new AALine((Point)prevPoints[0], new Point(x, y), (int)numericLineWidth.Value, currentColor));
+                        prevPoints.Clear();
+                        label1.Text = "Select the first point.";
                         break;
                 }
                 DrawShapes();

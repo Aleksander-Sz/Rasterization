@@ -293,6 +293,117 @@ namespace CG_Project3
             pictureData[i + 2] = (byte)c.R;
         }
     }
+    internal class AALine : IShape
+    {
+        public Point a, b;
+        public Color color;
+        private int width;
+        public AALine(Point a, Point b, int width, Color color)
+        {
+            this.a = a;
+            this.b = b;
+            this.width = width;
+            this.color = color;
+        }
+        public AALine(string text)
+        {
+            string[] elements = text.Split(',');
+            a = new Point(Int32.Parse(elements[0]), Int32.Parse(elements[1]));
+            b = new Point(Int32.Parse(elements[2]), Int32.Parse(elements[3]));
+            width = Int32.Parse(elements[4]);
+            color = Color.FromArgb(Convert.ToInt32(elements[5], 16));
+        }
+        public void Draw(byte[] bitmap, int stride)
+        {
+            int x = this.a.X;
+            int y = this.a.Y;
+            int dx = Math.Abs(this.b.X - this.a.X);
+            int dy = Math.Abs(this.b.Y - this.a.Y);
+            int sx = this.b.X > this.a.X ? 1 : -1;
+            int sy = this.b.Y > this.a.Y ? 1 : -1;
+            double D = 2 * dy - dx;
+            double d;
+            int i;
+            double W = this.width / 2;
+            double two_v_dx = 0;
+            int halfWidth = this.width / 2;
+            double lineLength = Math.Sqrt(dx * dx + dy * dy);
+            if (dy <= dx)
+            {
+                for (int j = 0; j <= dx; j++)
+                {
+                    d = Math.Abs(two_v_dx) / Math.Sqrt((double)(dx * dx + dy * dy));
+
+
+                    for (int offset = -halfWidth; offset <= halfWidth; offset++)
+                    {
+                        int yy = y + offset;
+                        double distToCenter = Math.Abs(offset); // perpendicular offset in pixels
+                        double brightness = intensity(distToCenter); // map to [0..1]
+                        if (brightness > 0)
+                        {
+                            i = (yy * stride) + (x * 3);
+                            PixelSet(bitmap, i, brightness);
+                        }
+                    }
+                    if (D > 0)
+                    {
+                        y+=sy;
+                        D -= 2 * dx;
+                    }
+                    D += 2 * dy;
+                    x+=sx;
+                    two_v_dx += 2 * dy;
+                }
+            }
+            else
+            {
+                double two_v_dy = 0;
+                D = 2 * dx - dy;
+                for (int j = 0; j <= dy; j++)
+                {
+                    for (int offset = -halfWidth; offset <= halfWidth; offset++)
+                    {
+                        int xx = x + offset;
+                        double distToCenter = Math.Abs(offset);
+                        double brightness = intensity(distToCenter);
+                        if (brightness > 0)
+                        {
+                            i = (y * stride) + (xx * 3);
+                            PixelSet(bitmap, i, brightness);
+                        }
+                    }
+
+                    if (D > 0)
+                    {
+                        x += sx;
+                        D -= 2 * dy;
+                    }
+                    D += 2 * dx;
+                    y += sy;
+                    two_v_dy += 2 * dx;
+                }
+            }
+        }
+        public override string ToString()
+        {
+            return "A;" + a.X.ToString() + "," + a.Y.ToString() + "," + b.X.ToString() + "," + b.Y.ToString() + "," + string.Format("{0:x6}", color.ToArgb());
+        }
+        private void PixelSet(byte[] pictureData, int i, double intensity)
+        {
+            if (i < 0 || i + 2 >= pictureData.Length)
+                return;
+            pictureData[i] = (byte)Math.Round((this.color.B*intensity));
+            pictureData[i + 1] = (byte)Math.Round((this.color.G*intensity));
+            pictureData[i + 2] = (byte)Math.Round((this.color.R*intensity));
+        }
+        private double intensity(double d)
+        {
+            double radius = this.width / 2.0;
+            if (d > radius) return 0;
+            return 1.0 - (d / radius); // linear fade
+        }
+    }
     class Polygon : IShape
     {
         protected List<Point> points;

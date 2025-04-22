@@ -105,6 +105,7 @@
             // 
             // comboBox1
             // 
+            comboBox1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             comboBox1.FormattingEnabled = true;
             comboBox1.Location = new Point(12, 513);
             comboBox1.Name = "comboBox1";
@@ -113,6 +114,7 @@
             // 
             // pickColorButton
             // 
+            pickColorButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             pickColorButton.Location = new Point(169, 512);
             pickColorButton.Name = "pickColorButton";
             pickColorButton.Size = new Size(123, 28);
@@ -123,6 +125,7 @@
             // 
             // panel1
             // 
+            panel1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             panel1.Location = new Point(298, 513);
             panel1.Name = "panel1";
             panel1.Size = new Size(60, 28);
@@ -131,6 +134,7 @@
             // 
             // label1
             // 
+            label1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             label1.AutoSize = true;
             label1.Location = new Point(364, 516);
             label1.Name = "label1";
@@ -140,6 +144,7 @@
             // 
             // label2
             // 
+            label2.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             label2.AutoSize = true;
             label2.Location = new Point(549, 516);
             label2.Name = "label2";
@@ -149,6 +154,7 @@
             // 
             // numericLineWidth
             // 
+            numericLineWidth.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             numericLineWidth.Location = new Point(635, 513);
             numericLineWidth.Name = "numericLineWidth";
             numericLineWidth.Size = new Size(64, 27);
