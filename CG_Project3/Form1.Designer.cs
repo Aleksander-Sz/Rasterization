@@ -35,6 +35,10 @@
             loadFileToolStripMenuItem = new ToolStripMenuItem();
             clearToolStripMenuItem = new ToolStripMenuItem();
             exportImageToolStripMenuItem = new ToolStripMenuItem();
+            comboBox1 = new ComboBox();
+            pickColorButton = new Button();
+            panel1 = new Panel();
+            colorDialog1 = new ColorDialog();
             ((System.ComponentModel.ISupportInitialize)pictureBox).BeginInit();
             menuStrip1.SuspendLayout();
             SuspendLayout();
@@ -48,6 +52,7 @@
             pictureBox.SizeMode = PictureBoxSizeMode.CenterImage;
             pictureBox.TabIndex = 0;
             pictureBox.TabStop = false;
+            pictureBox.MouseClick += pictureBox_MouseClick;
             // 
             // menuStrip1
             // 
@@ -94,11 +99,39 @@
             exportImageToolStripMenuItem.Text = "Export Image";
             exportImageToolStripMenuItem.Click += exportImageToolStripMenuItem_Click;
             // 
+            // comboBox1
+            // 
+            comboBox1.FormattingEnabled = true;
+            comboBox1.Location = new Point(12, 513);
+            comboBox1.Name = "comboBox1";
+            comboBox1.Size = new Size(151, 28);
+            comboBox1.TabIndex = 2;
+            // 
+            // pickColorButton
+            // 
+            pickColorButton.Location = new Point(169, 512);
+            pickColorButton.Name = "pickColorButton";
+            pickColorButton.Size = new Size(123, 28);
+            pickColorButton.TabIndex = 3;
+            pickColorButton.Text = "Change Color";
+            pickColorButton.UseVisualStyleBackColor = true;
+            pickColorButton.Click += pickColorButton_Click;
+            // 
+            // panel1
+            // 
+            panel1.Location = new Point(298, 513);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(60, 28);
+            panel1.TabIndex = 4;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(982, 553);
+            Controls.Add(panel1);
+            Controls.Add(pickColorButton);
+            Controls.Add(comboBox1);
             Controls.Add(pictureBox);
             Controls.Add(menuStrip1);
             MainMenuStrip = menuStrip1;
@@ -120,5 +153,9 @@
         private ToolStripMenuItem loadFileToolStripMenuItem;
         private ToolStripMenuItem clearToolStripMenuItem;
         private ToolStripMenuItem exportImageToolStripMenuItem;
+        private ComboBox comboBox1;
+        private Button pickColorButton;
+        private Panel panel1;
+        private ColorDialog colorDialog1;
     }
 }

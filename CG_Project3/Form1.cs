@@ -7,11 +7,21 @@ namespace CG_Project3
     {
         Bitmap? Image;
         List<IShape> Shapes;
+        List<Point?> prevPoints;
+        Color currentColor;
         public Form1()
         {
             InitializeComponent();
             Image = new Bitmap(pictureBox.Width, pictureBox.Height);
             pictureBox.Image = Image;
+            prevPoints = new List<Point?>();
+            comboBox1.Items.Add("Line");
+            comboBox1.Items.Add("Thick Line");
+            comboBox1.Items.Add("Circle");
+            comboBox1.Items.Add("Anti-Alliased Line");
+            comboBox1.SelectedItem = 0;
+            currentColor = Color.White;
+            panel1.BackColor = currentColor;
             Shapes = new List<IShape>();
             Shapes.Add(new Line(new Point(400, 200), new Point(100, 50), Color.FromArgb(255, 0, 255, 0)));
             Shapes.Add(new Line(new Point(600, 300), new Point(400, 50), Color.FromArgb(255, 255, 0, 0)));
@@ -121,6 +131,51 @@ namespace CG_Project3
                 {
                     MessageBox.Show("Error exporting the image: " + exception.Message);
                 }
+            }
+        }
+
+        private void pictureBox_MouseClick(object sender, MouseEventArgs e)
+        {
+            int x = e.X;
+            int y = e.Y;
+            //check chosen mode
+            if (prevPoints.Count == 0)
+            {
+                prevPoints.Add(new Point(x, y));
+            }
+            else
+            {
+                switch (comboBox1.SelectedIndex)
+                {
+                    case 0:
+                        Shapes.Add(new Line((Point)prevPoints[0], new Point(x, y), currentColor));
+                        prevPoints.Clear();
+                        break;
+                    case 1:
+                        Shapes.Add(new ThickLine((Point)prevPoints[0], new Point(x, y), 10, currentColor));
+                        prevPoints.Clear();
+                        break;
+                    case 2:
+                        Point center = (Point)prevPoints[0];
+                        int dx = x - center.X;
+                        int dy = y - center.Y;
+                        int radius = (int)Math.Sqrt((double)(dx * dx + dy * dy));
+                        Shapes.Add(new Circle((Point)prevPoints[0], radius, currentColor));
+                        prevPoints.Clear();
+                        break;
+
+
+                }
+                DrawShapes();
+            }
+        }
+
+        private void pickColorButton_Click(object sender, EventArgs e)
+        {
+            if(colorDialog1.ShowDialog() == DialogResult.OK)
+            {
+                currentColor = colorDialog1.Color;
+                panel1.BackColor = currentColor;
             }
         }
     }
