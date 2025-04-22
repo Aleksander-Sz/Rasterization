@@ -7,19 +7,21 @@ namespace CG_Project3
     {
         Bitmap? Image;
         List<IShape> Shapes;
-        List<Point?> prevPoints;
+        List<Point> prevPoints;
         Color currentColor;
         public Form1()
         {
             InitializeComponent();
             Image = new Bitmap(pictureBox.Width, pictureBox.Height);
             pictureBox.Image = Image;
-            prevPoints = new List<Point?>();
+            prevPoints = new List<Point>();
             comboBox1.Items.Add("Line");
             comboBox1.Items.Add("Thick Line");
             comboBox1.Items.Add("Circle");
+            comboBox1.Items.Add("Polygon");
             comboBox1.Items.Add("Anti-Alliased Line");
-            comboBox1.SelectedItem = 0;
+            comboBox1.SelectedIndex = 0;
+            label1.Text = "Select the first point.";
             currentColor = Color.White;
             panel1.BackColor = currentColor;
             Shapes = new List<IShape>();
@@ -97,6 +99,9 @@ namespace CG_Project3
                             case 'C':
                                 Shapes.Add(new Circle(elements[1]));
                                 break;
+                            case 'P':
+                                Shapes.Add(new Polygon(elements[1]));
+                                break;
                         }
                     }
                 }
@@ -138,32 +143,51 @@ namespace CG_Project3
         {
             int x = e.X;
             int y = e.Y;
+            int dx, dy;
             //check chosen mode
             if (prevPoints.Count == 0)
             {
                 prevPoints.Add(new Point(x, y));
+                label1.Text = "Select the second point.";
             }
             else
             {
                 switch (comboBox1.SelectedIndex)
                 {
-                    case 0:
+                    case 0: // thin line
                         Shapes.Add(new Line((Point)prevPoints[0], new Point(x, y), currentColor));
                         prevPoints.Clear();
+                        label1.Text = "Select the first point.";
                         break;
-                    case 1:
-                        Shapes.Add(new ThickLine((Point)prevPoints[0], new Point(x, y), 10, currentColor));
+                    case 1: // thick line
+                        Shapes.Add(new ThickLine((Point)prevPoints[0], new Point(x, y), (int)numericLineWidth.Value, currentColor));
                         prevPoints.Clear();
+                        label1.Text = "Select the first point.";
                         break;
-                    case 2:
+                    case 2: // circle
                         Point center = (Point)prevPoints[0];
-                        int dx = x - center.X;
-                        int dy = y - center.Y;
+                        dx = x - center.X;
+                        dy = y - center.Y;
                         int radius = (int)Math.Sqrt((double)(dx * dx + dy * dy));
                         Shapes.Add(new Circle((Point)prevPoints[0], radius, currentColor));
                         prevPoints.Clear();
                         break;
+                    case 3: // polygon
+                        prevPoints.Add(new Point(x, y));
+                        if(prevPoints.Count == 2)
+                        {
+                            Shapes.Add(new Polygon(currentColor, prevPoints, (int)numericLineWidth.Value));
+                        }
+                        dx = x - prevPoints[0].X;
+                        dy = y - prevPoints[0].Y;
+                        if ((dx * dx) + (dy * dy) < 100)
+                        {
 
+                            ((Polygon)Shapes[Shapes.Count - 1]).Closed = true;
+                        }
+                        else
+                            return;
+                        break;
 
                 }
                 DrawShapes();
@@ -172,11 +196,16 @@ namespace CG_Project3
 
         private void pickColorButton_Click(object sender, EventArgs e)
         {
-            if(colorDialog1.ShowDialog() == DialogResult.OK)
+            if (colorDialog1.ShowDialog() == DialogResult.OK)
             {
                 currentColor = colorDialog1.Color;
                 panel1.BackColor = currentColor;
             }
+        }
+
+        private void panel1_Click(object sender, EventArgs e)
+        {
+            pickColorButton_Click(sender, e);
         }
     }
 }

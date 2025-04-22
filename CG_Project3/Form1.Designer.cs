@@ -39,8 +39,12 @@
             pickColorButton = new Button();
             panel1 = new Panel();
             colorDialog1 = new ColorDialog();
+            label1 = new Label();
+            label2 = new Label();
+            numericLineWidth = new NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)pictureBox).BeginInit();
             menuStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)numericLineWidth).BeginInit();
             SuspendLayout();
             // 
             // pictureBox
@@ -123,12 +127,42 @@
             panel1.Name = "panel1";
             panel1.Size = new Size(60, 28);
             panel1.TabIndex = 4;
+            panel1.Click += panel1_Click;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(364, 516);
+            label1.Name = "label1";
+            label1.Size = new Size(50, 20);
+            label1.TabIndex = 5;
+            label1.Text = "label1";
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new Point(549, 516);
+            label2.Name = "label2";
+            label2.Size = new Size(80, 20);
+            label2.TabIndex = 6;
+            label2.Text = "Line width:";
+            // 
+            // numericLineWidth
+            // 
+            numericLineWidth.Location = new Point(635, 513);
+            numericLineWidth.Name = "numericLineWidth";
+            numericLineWidth.Size = new Size(64, 27);
+            numericLineWidth.TabIndex = 7;
+            numericLineWidth.Value = new decimal(new int[] { 5, 0, 0, 0 });
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(982, 553);
+            Controls.Add(numericLineWidth);
+            Controls.Add(label2);
+            Controls.Add(label1);
             Controls.Add(panel1);
             Controls.Add(pickColorButton);
             Controls.Add(comboBox1);
@@ -140,6 +174,7 @@
             ((System.ComponentModel.ISupportInitialize)pictureBox).EndInit();
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)numericLineWidth).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -157,5 +192,8 @@
         private Button pickColorButton;
         private Panel panel1;
         private ColorDialog colorDialog1;
+        private Label label1;
+        private Label label2;
+        private NumericUpDown numericLineWidth;
     }
 }

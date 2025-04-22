@@ -40,15 +40,15 @@ namespace CG_Project3
             int sy = this.b.Y > this.a.Y ? 1 : -1;
             int d;
             int i;
-            if(dy<=dx)
+            if (dy <= dx)
             {
                 d = dy - (dx / 2);
                 /*i = y * stride + x * 3;
                 bitmap[i] = bitmap[i + 1] = bitmap[i + 2] = (byte)255;*/
                 for (int step = 0; step <= dx; step++)
                 {
-                    x +=sx;
-                    if(d<0)
+                    x += sx;
+                    if (d < 0)
                     {
                         // E chosen
                         d = d + dy;
@@ -57,7 +57,7 @@ namespace CG_Project3
                     {
                         // NE chosen
                         d = d + dy - dx;
-                        y+=sy;
+                        y += sy;
                     }
                     i = y * stride + x * 3;
                     PixelSet(bitmap, i, this.color);
@@ -70,7 +70,7 @@ namespace CG_Project3
                 bitmap[i] = bitmap[i + 1] = bitmap[i + 2] = (byte)255;*/
                 for (int step = 0; step <= dy; step++)
                 {
-                    y +=sy;
+                    y += sy;
                     if (d < 0)
                     {
                         // E chosen
@@ -80,7 +80,7 @@ namespace CG_Project3
                     {
                         // NE chosen
                         d = d + dx - dy;
-                        x+=sx;
+                        x += sx;
                     }
                     i = y * stride + x * 3;
                     PixelSet(bitmap, i, this.color);
@@ -112,7 +112,7 @@ namespace CG_Project3
             this.b = b;
             this.width = width;
             this.color = color;
-            brush = new int[width,width];
+            brush = new int[width, width];
             for (int xo = 0; xo < this.width; xo++)
             {
                 for (int yo = 0; yo < this.width; yo++)
@@ -206,8 +206,8 @@ namespace CG_Project3
             {
                 for (int yo = 0; yo < this.width; yo++)
                 {
-                    i = (y + yo - width/2) * stride + (x + xo - width/2) * 3;
-                    if (brush[xo,yo]==1)
+                    i = (y + yo - width / 2) * stride + (x + xo - width / 2) * 3;
+                    if (brush[xo, yo] == 1)
                         PixelSet(bitmap, i, this.color);
                 }
             }
@@ -245,7 +245,7 @@ namespace CG_Project3
             PixelSet(bitmap, i, color);
             i = (-x + this.center.Y) * stride + (this.center.X) * 3;
             PixelSet(bitmap, i, color);
-            while (x>y)
+            while (x > y)
             {
                 y++;
 
@@ -267,7 +267,7 @@ namespace CG_Project3
                 PixelSet(bitmap, i, color);
                 i = (-y + this.center.Y) * stride + (-x + this.center.X) * 3;
                 PixelSet(bitmap, i, color);
-                if(x!=y)
+                if (x != y)
                 {
                     i = (x + this.center.Y) * stride + (y + this.center.X) * 3;
                     PixelSet(bitmap, i, color);
@@ -291,6 +291,70 @@ namespace CG_Project3
             pictureData[i] = (byte)c.B;
             pictureData[i + 1] = (byte)c.G;
             pictureData[i + 2] = (byte)c.R;
+        }
+    }
+    class Polygon : IShape
+    {
+        protected List<Point> points;
+        private int width;
+        private Color color;
+        private List<ThickLine> lines;
+        public bool Closed;
+        public Polygon(Color color, List<Point> points, int width = 1, bool closed = true)
+        {
+            this.color = color;
+            this.points = points;
+            this.width = width;
+            this.lines = new List<ThickLine>();
+            this.Closed = closed;
+            GenerateLines();
+        }
+        public Polygon(string text) : this(
+            Color.FromArgb(Convert.ToInt32(text.Split('|')[0].Split(',')[0], 16)),
+            new List<Point>(),
+            Int32.Parse(text.Split('|')[0].Split(',')[1]))
+        {
+            string[] pointsText = text.Split('|')[1].Split(',');
+            for (int i = 0; i < pointsText.Length / 2; i++)
+            {
+                points.Add(new Point(Int32.Parse(pointsText[i * 2]), Int32.Parse(pointsText[i * 2 + 1])));
+            }
+            GenerateLines();
+        }
+        private void GenerateLines()
+        {
+            this.lines.Clear();
+            for(int i = 0; i<points.Count-1;i++)
+            {
+                lines.Add(new ThickLine(points[i], points[i+1],this.width,this.color));
+            }
+            if(Closed)
+            {
+                lines.Add(new ThickLine(points[points.Count - 1], points[0], this.width, this.color));
+            }
+        }
+        public override string ToString()
+        {
+            string pointsText = "";
+            foreach (Point point in points)
+            {
+                pointsText += point.X.ToString() + "," + point.Y.ToString() + ",";
+            }
+            return "P;" + string.Format("{0:x6}", color.ToArgb()) + "," + this.width.ToString() + "|" + pointsText;
+        }
+        public void Draw(byte[] bitmap, int stride)
+        {
+            if (Closed && lines.Count != points.Count)
+                GenerateLines();
+            foreach(ThickLine line in lines)
+            {
+                line.Draw(bitmap, stride);
+            }
+        }
+        public void Add(Point point)
+        {
+            points.Add(point);
+            lines.Add(new ThickLine(points[points.Count - 1], point, this.width, this.color));
         }
     }
 }
