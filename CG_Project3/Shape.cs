@@ -387,7 +387,7 @@ namespace CG_Project3
         }
         public override string ToString()
         {
-            return "A;" + a.X.ToString() + "," + a.Y.ToString() + "," + b.X.ToString() + "," + b.Y.ToString() + "," + string.Format("{0:x6}", color.ToArgb());
+            return "A;" + a.X.ToString() + "," + a.Y.ToString() + "," + b.X.ToString() + "," + b.Y.ToString() + "," + this.width.ToString() + "," + string.Format("{0:x6}", color.ToArgb());
         }
         private void PixelSet(byte[] pictureData, int i, double intensity)
         {
