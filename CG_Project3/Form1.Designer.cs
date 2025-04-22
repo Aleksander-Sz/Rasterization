@@ -44,7 +44,7 @@
             pictureBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             pictureBox.Location = new Point(12, 31);
             pictureBox.Name = "pictureBox";
-            pictureBox.Size = new Size(776, 369);
+            pictureBox.Size = new Size(958, 472);
             pictureBox.SizeMode = PictureBoxSizeMode.CenterImage;
             pictureBox.TabIndex = 0;
             pictureBox.TabStop = false;
@@ -55,7 +55,7 @@
             menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
-            menuStrip1.Size = new Size(800, 28);
+            menuStrip1.Size = new Size(982, 28);
             menuStrip1.TabIndex = 1;
             menuStrip1.Text = "menuStrip1";
             // 
@@ -69,28 +69,28 @@
             // saveToolStripMenuItem
             // 
             saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            saveToolStripMenuItem.Size = new Size(224, 26);
+            saveToolStripMenuItem.Size = new Size(181, 26);
             saveToolStripMenuItem.Text = "Save";
             saveToolStripMenuItem.Click += saveToolStripMenuItem_Click;
             // 
             // loadFileToolStripMenuItem
             // 
             loadFileToolStripMenuItem.Name = "loadFileToolStripMenuItem";
-            loadFileToolStripMenuItem.Size = new Size(224, 26);
+            loadFileToolStripMenuItem.Size = new Size(181, 26);
             loadFileToolStripMenuItem.Text = "Load File";
             loadFileToolStripMenuItem.Click += loadFileToolStripMenuItem_Click;
             // 
             // clearToolStripMenuItem
             // 
             clearToolStripMenuItem.Name = "clearToolStripMenuItem";
-            clearToolStripMenuItem.Size = new Size(224, 26);
+            clearToolStripMenuItem.Size = new Size(181, 26);
             clearToolStripMenuItem.Text = "Clear";
             clearToolStripMenuItem.Click += clearToolStripMenuItem_Click;
             // 
             // exportImageToolStripMenuItem
             // 
             exportImageToolStripMenuItem.Name = "exportImageToolStripMenuItem";
-            exportImageToolStripMenuItem.Size = new Size(224, 26);
+            exportImageToolStripMenuItem.Size = new Size(181, 26);
             exportImageToolStripMenuItem.Text = "Export Image";
             exportImageToolStripMenuItem.Click += exportImageToolStripMenuItem_Click;
             // 
@@ -98,7 +98,7 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(982, 553);
             Controls.Add(pictureBox);
             Controls.Add(menuStrip1);
             MainMenuStrip = menuStrip1;

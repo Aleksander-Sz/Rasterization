@@ -13,13 +13,17 @@ namespace CG_Project3
             Image = new Bitmap(pictureBox.Width, pictureBox.Height);
             pictureBox.Image = Image;
             Shapes = new List<IShape>();
-            Shapes.Add(new Line(new Point(400, 200), new Point(100, 50), Color.FromArgb(255, 255, 255, 255)));
+            Shapes.Add(new Line(new Point(400, 200), new Point(100, 50), Color.FromArgb(255, 0, 255, 0)));
+            Shapes.Add(new Line(new Point(600, 300), new Point(400, 50), Color.FromArgb(255, 255, 0, 0)));
+            Shapes.Add(new ThickLine(new Point(0, 0), new Point(400, 50), 5, Color.FromArgb(255, 0, 0, 100)));
             DrawShapes();
         }
 
         public void DrawShapes()
         {
             int stride;
+            Image.Dispose();
+            Image = new Bitmap(pictureBox.Width, pictureBox.Height); ;
             byte[] ImageBytes = Program.ImageToByteArray(Image, out stride);
             foreach (IShape shape in Shapes)
             {
@@ -27,12 +31,11 @@ namespace CG_Project3
             }
             int width = Image.Width;
             int height = Image.Height;
-            Image.Dispose();
             Image = Program.ByteArrayToImage(ImageBytes, width, height, stride);
             pictureBox.Image = Image;
         }
 
-        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e) // save
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = "Txt File|*.txt|Vector Image|*.vec|Any format|*.*";
@@ -57,7 +60,7 @@ namespace CG_Project3
             }
         }
 
-        private void loadFileToolStripMenuItem_Click(object sender, EventArgs e)
+        private void loadFileToolStripMenuItem_Click(object sender, EventArgs e) // load
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "Txt File|*.txt|Vector Image|*.vec|Any format|*.*";
@@ -85,8 +88,10 @@ namespace CG_Project3
                 catch (Exception exception)
                 {
                     MessageBox.Show("Error loading the vector data: " + exception.Message);
+                    return;
                 }
             }
+            DrawShapes();
         }
 
         private void clearToolStripMenuItem_Click(object sender, EventArgs e)
