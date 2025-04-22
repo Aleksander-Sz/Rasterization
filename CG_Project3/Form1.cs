@@ -119,6 +119,8 @@ namespace CG_Project3
             Shapes.Clear();
             Image = new Bitmap(pictureBox.Width, pictureBox.Height);
             pictureBox.Image = Image;
+            prevPoints.Clear();
+            DrawShapes();
         }
 
         private void exportImageToolStripMenuItem_Click(object sender, EventArgs e)
@@ -174,21 +176,22 @@ namespace CG_Project3
                         break;
                     case 3: // polygon
                         prevPoints.Add(new Point(x, y));
-                        if(prevPoints.Count == 2)
+                        if (prevPoints.Count == 2)
                         {
-                            Shapes.Add(new Polygon(currentColor, prevPoints, (int)numericLineWidth.Value));
+                            Shapes.Add(new Polygon(currentColor, new List<Point>(prevPoints), (int)numericLineWidth.Value, false));
+                            break;
                         }
                         dx = x - prevPoints[0].X;
                         dy = y - prevPoints[0].Y;
-                        if ((dx * dx) + (dy * dy) < 100)
+                        if ((dx * dx) + (dy * dy) < 1000)
                         {
 
-                            ((Polygon)Shapes[Shapes.Count - 1]).Closed = true;
+                            ((Polygon)Shapes.Last()).Closed = true;
+                            break;
                         }
                         else
-                            return;
+                            ((Polygon)Shapes.Last()).Add(new Point(x, y));
                         break;
-
                 }
                 DrawShapes();
             }

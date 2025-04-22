@@ -307,22 +307,24 @@ namespace CG_Project3
             this.width = width;
             this.lines = new List<ThickLine>();
             this.Closed = closed;
-            GenerateLines();
+            //GenerateLines();
         }
         public Polygon(string text) : this(
             Color.FromArgb(Convert.ToInt32(text.Split('|')[0].Split(',')[0], 16)),
             new List<Point>(),
-            Int32.Parse(text.Split('|')[0].Split(',')[1]))
+            Int32.Parse(text.Split('|')[0].Split(',')[1]),
+            (text.Split('|')[0].Split(',')[2]=="C"))
         {
             string[] pointsText = text.Split('|')[1].Split(',');
             for (int i = 0; i < pointsText.Length / 2; i++)
             {
                 points.Add(new Point(Int32.Parse(pointsText[i * 2]), Int32.Parse(pointsText[i * 2 + 1])));
             }
-            GenerateLines();
+            //GenerateLines();
         }
         private void GenerateLines()
         {
+            //throw new Exception(points.Count.ToString());
             this.lines.Clear();
             for(int i = 0; i<points.Count-1;i++)
             {
@@ -330,7 +332,7 @@ namespace CG_Project3
             }
             if(Closed)
             {
-                lines.Add(new ThickLine(points[points.Count - 1], points[0], this.width, this.color));
+                lines.Add(new ThickLine(points.Last(), points[0], this.width, this.color));
             }
         }
         public override string ToString()
@@ -340,11 +342,13 @@ namespace CG_Project3
             {
                 pointsText += point.X.ToString() + "," + point.Y.ToString() + ",";
             }
-            return "P;" + string.Format("{0:x6}", color.ToArgb()) + "," + this.width.ToString() + "|" + pointsText;
+            return "P;" + string.Format("{0:x6}", color.ToArgb()) + "," + this.width.ToString() + "," + ((this.Closed==true) ? "C" : "O") + "|" + pointsText;
         }
         public void Draw(byte[] bitmap, int stride)
         {
             if (Closed && lines.Count != points.Count)
+                GenerateLines();
+            if (!Closed && lines.Count != points.Count - 1)
                 GenerateLines();
             foreach(ThickLine line in lines)
             {
@@ -354,7 +358,12 @@ namespace CG_Project3
         public void Add(Point point)
         {
             points.Add(point);
-            lines.Add(new ThickLine(points[points.Count - 1], point, this.width, this.color));
+            if(this.Closed)
+            {
+                GenerateLines();
+                return;
+            }
+            lines.Add(new ThickLine(points[points.Count - 2], point, this.width, this.color));
         }
     }
 }
