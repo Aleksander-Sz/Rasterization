@@ -17,6 +17,7 @@ namespace CG_Project3
             Shapes.Add(new Line(new Point(600, 300), new Point(400, 50), Color.FromArgb(255, 255, 0, 0)));
             Shapes.Add(new ThickLine(new Point(0, 0), new Point(400, 50), 5, Color.FromArgb(255, 0, 0, 100)));
             Shapes.Add(new ThickLine(new Point(100, 100), new Point(100, 100), 15, Color.FromArgb(255, 0, 0, 100)));
+            Shapes.Add(new Circle(new Point(500, 250), 30, Color.FromArgb(255, 100, 100, 100)));
             DrawShapes();
         }
 

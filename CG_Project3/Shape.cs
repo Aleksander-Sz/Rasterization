@@ -231,13 +231,66 @@ namespace CG_Project3
             radius = Int32.Parse(elements[2]);
             color = Color.FromArgb(Convert.ToInt32(elements[3], 16));
         }
-        public void Draw(byte[] bitmap, int stride)
+        public void Draw(byte[] bitmap, int stride) // loosely based on this: https://www.geeksforgeeks.org/mid-point-circle-drawing-algorithm/
         {
-            ;
+            int x = radius;
+            int y = 0;
+            int P = 1 - radius;
+            int i;
+            i = (this.center.Y) * stride + (x + this.center.X) * 3;
+            PixelSet(bitmap, i, color);
+            i = (this.center.Y) * stride + (-x + this.center.X) * 3;
+            PixelSet(bitmap, i, color);
+            i = (x + this.center.Y) * stride + (this.center.X) * 3;
+            PixelSet(bitmap, i, color);
+            i = (-x + this.center.Y) * stride + (this.center.X) * 3;
+            PixelSet(bitmap, i, color);
+            while (x>y)
+            {
+                y++;
+
+                if (P <= 0)
+                    P = P + 2 * y + 1;
+                else
+                {
+                    x--;
+                    P = P + 2 * y - 2 * x + 1;
+                }
+
+                if (x < y)
+                    break;
+                i = (y + this.center.Y) * stride + (x + this.center.X) * 3;
+                PixelSet(bitmap, i, color);
+                i = (y + this.center.Y) * stride + (-x + this.center.X) * 3;
+                PixelSet(bitmap, i, color);
+                i = (-y + this.center.Y) * stride + (x + this.center.X) * 3;
+                PixelSet(bitmap, i, color);
+                i = (-y + this.center.Y) * stride + (-x + this.center.X) * 3;
+                PixelSet(bitmap, i, color);
+                if(x!=y)
+                {
+                    i = (x + this.center.Y) * stride + (y + this.center.X) * 3;
+                    PixelSet(bitmap, i, color);
+                    i = (x + this.center.Y) * stride + (-y + this.center.X) * 3;
+                    PixelSet(bitmap, i, color);
+                    i = (-x + this.center.Y) * stride + (y + this.center.X) * 3;
+                    PixelSet(bitmap, i, color);
+                    i = (-x + this.center.Y) * stride + (-y + this.center.X) * 3;
+                    PixelSet(bitmap, i, color);
+                }
+            }
         }
         public override string ToString()
         {
             return "C;" + center.X.ToString() + "," + center.Y.ToString() + "," + radius.ToString() + "," + string.Format("{0:x6}", color.ToArgb());
+        }
+        private void PixelSet(byte[] pictureData, int i, Color c)
+        {
+            if (i < 0 || i + 2 >= pictureData.Length)
+                return;
+            pictureData[i] = (byte)c.B;
+            pictureData[i + 1] = (byte)c.G;
+            pictureData[i + 2] = (byte)c.R;
         }
     }
 }
