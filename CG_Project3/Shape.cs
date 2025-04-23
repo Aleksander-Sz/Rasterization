@@ -12,6 +12,7 @@ namespace CG_Project3
     internal interface IShape
     {
         public void Draw(byte[] bitmap, int stride);
+        public List<Vertex> GetVertices();
     }
     internal class Line : IShape
     {
@@ -98,6 +99,15 @@ namespace CG_Project3
             pictureData[i] = (byte)c.B;
             pictureData[i + 1] = (byte)c.G;
             pictureData[i + 2] = (byte)c.R;
+        }
+        public List<Vertex> GetVertices()
+        {
+            List<Vertex> rPoints = new List<Vertex>();
+            rPoints.Add(new Vertex(a, this, Vertex.VertexType.Normal));
+            rPoints.Add(new Vertex(b, this, Vertex.VertexType.Normal));
+            rPoints.Add(new Vertex(new Point((a.X + b.X) / 2, (a.Y + b.Y) / 2), this, Vertex.VertexType.Center));
+            return rPoints;
+
         }
     }
     internal class ThickLine : IShape
@@ -212,6 +222,15 @@ namespace CG_Project3
                 }
             }
         }
+        public List<Vertex> GetVertices()
+        {
+            List<Vertex> rPoints = new List<Vertex>();
+            rPoints.Add(new Vertex(a, this, Vertex.VertexType.Normal));
+            rPoints.Add(new Vertex(b, this, Vertex.VertexType.Normal));
+            rPoints.Add(new Vertex(new Point((a.X + b.X) / 2, (a.Y + b.Y) / 2), this, Vertex.VertexType.Center));
+            return rPoints;
+
+        }
     }
     internal class Circle : IShape
     {
@@ -291,6 +310,14 @@ namespace CG_Project3
             pictureData[i] = (byte)c.B;
             pictureData[i + 1] = (byte)c.G;
             pictureData[i + 2] = (byte)c.R;
+        }
+        public List<Vertex> GetVertices()
+        {
+            List<Vertex> rPoints = new List<Vertex>();
+            rPoints.Add(new Vertex(center, this, Vertex.VertexType.Center));
+            rPoints.Add(new Vertex(new Point(center.X,center.Y+radius), this, Vertex.VertexType.Circumference));
+            return rPoints;
+
         }
     }
     internal class AALine : IShape
@@ -384,6 +411,7 @@ namespace CG_Project3
                     two_v_dy += 2 * dx;
                 }
             }
+
         }
         public override string ToString()
         {
@@ -393,15 +421,30 @@ namespace CG_Project3
         {
             if (i < 0 || i + 2 >= pictureData.Length)
                 return;
-            pictureData[i] = (byte)Math.Round((this.color.B*intensity));
-            pictureData[i + 1] = (byte)Math.Round((this.color.G*intensity));
-            pictureData[i + 2] = (byte)Math.Round((this.color.R*intensity));
+            pictureData[i]     = (byte)Math.Round(Clamp(pictureData[i]     * (1.0 - intensity) + (this.color.B*intensity)));
+            pictureData[i + 2] = (byte)Math.Round(Clamp(pictureData[i + 2] * (1.0 - intensity) + (this.color.R*intensity)));
+            pictureData[i + 1] = (byte)Math.Round(Clamp(pictureData[i + 1] * (1.0 - intensity) + (this.color.G*intensity)));
+        }
+        private double Clamp(double value)
+        {
+            if (value >= 255)
+                return 255;
+            return value;
         }
         private double intensity(double d)
         {
             double radius = this.width / 2.0;
             if (d > radius) return 0;
             return 1.0 - (d / radius); // linear fade
+        }
+        public List<Vertex> GetVertices()
+        {
+            List<Vertex> rPoints = new List<Vertex>();
+            rPoints.Add(new Vertex(a, this, Vertex.VertexType.Normal));
+            rPoints.Add(new Vertex(b, this, Vertex.VertexType.Normal));
+            rPoints.Add(new Vertex(new Point((a.X + b.X) / 2, (a.Y + b.Y) / 2), this, Vertex.VertexType.Center));
+            return rPoints;
+
         }
     }
     class Polygon : IShape
@@ -475,6 +518,16 @@ namespace CG_Project3
                 return;
             }
             lines.Add(new ThickLine(points[points.Count - 2], point, this.width, this.color));
+        }
+        public List<Vertex> GetVertices()
+        {
+            List<Vertex> rPoints = new List<Vertex>();
+            foreach(Point point in points)
+            {
+                rPoints.Add(new Vertex(point, this, Vertex.VertexType.Normal));
+            }
+            return rPoints;
+
         }
     }
 }

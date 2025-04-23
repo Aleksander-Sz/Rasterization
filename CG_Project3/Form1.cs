@@ -9,6 +9,8 @@ namespace CG_Project3
         List<IShape> Shapes;
         List<Point> prevPoints;
         Color currentColor;
+        List<Vertex> vertices;
+        const int CLICK_DISTANCE = 1000;
         public Form1()
         {
             InitializeComponent();
@@ -20,17 +22,20 @@ namespace CG_Project3
             comboBox1.Items.Add("Circle");
             comboBox1.Items.Add("Polygon");
             comboBox1.Items.Add("Anti-Alliased Line");
+            comboBox1.Items.Add("Edit Shape");
+            comboBox1.Items.Add("Delete Shape");
             comboBox1.SelectedIndex = 0;
             label1.Text = "Select the first point.";
             currentColor = Color.White;
+            vertices = new List<Vertex>();
             panel1.BackColor = currentColor;
             Shapes = new List<IShape>();
-            Shapes.Add(new Line(new Point(400, 200), new Point(100, 50), Color.FromArgb(255, 0, 255, 0)));
+            /*Shapes.Add(new Line(new Point(400, 200), new Point(100, 50), Color.FromArgb(255, 0, 255, 0)));
             Shapes.Add(new Line(new Point(600, 300), new Point(400, 50), Color.FromArgb(255, 255, 0, 0)));
             Shapes.Add(new ThickLine(new Point(0, 0), new Point(400, 50), 5, Color.FromArgb(255, 0, 0, 100)));
             Shapes.Add(new ThickLine(new Point(100, 100), new Point(100, 100), 15, Color.FromArgb(255, 0, 0, 100)));
             Shapes.Add(new Circle(new Point(500, 250), 30, Color.FromArgb(255, 100, 100, 100)));
-            Shapes.Add(new AALine(new Point(100, 300), new Point(600,400),10,Color.FromArgb(255,255,0,255)));
+            Shapes.Add(new AALine(new Point(100, 300), new Point(600,400),10,Color.FromArgb(255,255,0,255)));*/
             DrawShapes();
         }
 
@@ -166,7 +171,7 @@ namespace CG_Project3
                         label1.Text = "Select the first point.";
                         break;
                     case 1: // thick line
-                        Shapes.Add(new ThickLine((Point)prevPoints[0], new Point(x, y), (int)numericLineWidth.Value, currentColor));
+                        AddShape(new ThickLine((Point)prevPoints[0], new Point(x, y), (int)numericLineWidth.Value, currentColor));
                         prevPoints.Clear();
                         label1.Text = "Select the first point.";
                         break;
@@ -175,7 +180,7 @@ namespace CG_Project3
                         dx = x - center.X;
                         dy = y - center.Y;
                         int radius = (int)Math.Sqrt((double)(dx * dx + dy * dy));
-                        Shapes.Add(new Circle((Point)prevPoints[0], radius, currentColor));
+                        AddShape(new Circle((Point)prevPoints[0], radius, currentColor));
                         prevPoints.Clear();
                         label1.Text = "Select the first point.";
                         break;
@@ -183,12 +188,12 @@ namespace CG_Project3
                         prevPoints.Add(new Point(x, y));
                         if (prevPoints.Count == 2)
                         {
-                            Shapes.Add(new Polygon(currentColor, new List<Point>(prevPoints), (int)numericLineWidth.Value, false));
+                            AddShape(new Polygon(currentColor, new List<Point>(prevPoints), (int)numericLineWidth.Value, false));
                             break;
                         }
                         dx = x - prevPoints[0].X;
                         dy = y - prevPoints[0].Y;
-                        if ((dx * dx) + (dy * dy) < 1000)
+                        if ((dx * dx) + (dy * dy) < CLICK_DISTANCE)
                         {
 
                             ((Polygon)Shapes.Last()).Closed = true;
@@ -200,9 +205,28 @@ namespace CG_Project3
                             ((Polygon)Shapes.Last()).Add(new Point(x, y));
                         break;
                     case 4:
-                        Shapes.Add(new AALine((Point)prevPoints[0], new Point(x, y), (int)numericLineWidth.Value, currentColor));
+                        AddShape(new AALine((Point)prevPoints[0], new Point(x, y), (int)numericLineWidth.Value, currentColor));
                         prevPoints.Clear();
                         label1.Text = "Select the first point.";
+                        break;
+                    case 6:
+                        foreach(Vertex vertex in vertices)
+                        {
+                            dx = vertex.Point.X - x;
+                            dy = vertex.Point.Y - y;
+                            if (dx*dx+dy*dy<CLICK_DISTANCE)
+                            {
+                                foreach (Vertex vertex2 in vertices)
+                                {
+                                    if (vertex.Owner==vertex2.Owner)
+                                    {
+                                        vertices.Remove(vertex2);
+                                    }
+                                }
+                                Shapes.Remove(vertex.Owner);
+                                break;
+                            }
+                        }
                         break;
                 }
                 DrawShapes();
@@ -221,6 +245,11 @@ namespace CG_Project3
         private void panel1_Click(object sender, EventArgs e)
         {
             pickColorButton_Click(sender, e);
+        }
+        private void AddShape(IShape shape)
+        {
+            Shapes.Add(shape);
+            vertices.AddRange(shape.GetVertices());
         }
     }
 }
