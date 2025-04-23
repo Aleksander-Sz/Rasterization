@@ -18,7 +18,7 @@ namespace CG_Project3
         public void Move(int x, int y);
         public List<Vertex> GetVertices();
     }
-    internal class Line : IShape
+    internal class Line : IShape // -----------------------------------------------------------
     {
         public Point a, b;
         public Color color { get; set; }
@@ -125,7 +125,7 @@ namespace CG_Project3
             b.Y += y;
         }
     }
-    internal class ThickLine : IShape
+    internal class ThickLine : IShape // -----------------------------------------------------------
     {
         Point a, b;
         public bool AA { get; set; }
@@ -279,7 +279,7 @@ namespace CG_Project3
             b.Y += y;
         }
     }
-    internal class Circle : IShape
+    internal class Circle : IShape // -----------------------------------------------------------
     {
         public Point center;
         public bool AA { get; set; }
@@ -411,7 +411,7 @@ namespace CG_Project3
             this.t.X = x;
         }
     }
-    internal class AALine : IShape
+    internal class AALine : IShape // -----------------------------------------------------------
     {
         public Point a, b;
         public Color color { get; set; }
@@ -556,7 +556,7 @@ namespace CG_Project3
             b.Y += y;
         }
     }
-    class Polygon : IShape
+    class Polygon : IShape // -----------------------------------------------------------
     {
         protected List<Point> points;
         public bool AA
