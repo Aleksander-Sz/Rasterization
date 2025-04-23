@@ -28,7 +28,8 @@ namespace CG_Project3
             comboBox1.Items.Add("Change Color");
             comboBox1.Items.Add("Change Thickness");
             comboBox1.Items.Add("Delete Shape");
-            comboBox1.SelectedIndex = 0;
+            comboBox1.Items.Add("PacMan");
+            comboBox1.SelectedIndex = 9;
             label1.Text = "Select the first point.";
             currentColor = Color.White;
             vertices = new List<Vertex>();
@@ -193,7 +194,7 @@ namespace CG_Project3
                         prevPoints.Add(new Point(x, y));
                         if (prevPoints.Count == 2)
                         {
-                            AddShape(new Polygon(currentColor, new List<Point>(prevPoints), (int)numericLineWidth.Value, false));
+                            AddShape(new Polygon(currentColor, new List<Point>(prevPoints), (int)numericLineWidth.Value, false, AACheckBox.Checked));
                             break;
                         }
                         dx = x - prevPoints[0].X;
@@ -262,7 +263,20 @@ namespace CG_Project3
                             }
                         }
                         break;
-
+                    case 9:
+                        if (prevPoints.Count == 2)
+                        {
+                            Shapes.Add(new PacMan(prevPoints[0], prevPoints[1], new Point(x,y),currentColor));
+                            prevPoints.Clear();
+                            label1.Text = "Select the first point.";
+                            break;
+                        }
+                        if(prevPoints.Count == 0)
+                            label1.Text = "Select the second point.";
+                        if (prevPoints.Count == 1)
+                            label1.Text = "Select the third point.";
+                        prevPoints.Add(new Point(x, y));
+                        break;
                 }
                 DrawShapes();
             }

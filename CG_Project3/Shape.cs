@@ -584,7 +584,11 @@ namespace CG_Project3
             set
             {
                 _width = value;
-                GenerateLines();
+                foreach (AALine line in lines)
+                {
+                    line.width = value;
+                }
+                //GenerateLines();
             }
         }
         public Color color
@@ -596,18 +600,23 @@ namespace CG_Project3
             set
             {
                 _color = value;
-                GenerateLines();
+                foreach (AALine line in lines)
+                {
+                    line.color = value;
+                }
+                //GenerateLines();
             }
         }
         private List<AALine> lines;
         public bool Closed;
-        public Polygon(Color color, List<Point> points, int width = 1, bool closed = true)
+        public Polygon(Color color, List<Point> points, int width = 1, bool closed = true, bool aa = false)
         {
             this._color = color;
             this.points = points;
             this._width = width;
             this.lines = new List<AALine>();
             this.Closed = closed;
+            this.AA = aa;
             //GenerateLines();
         }
         public Polygon(string text) : this(
@@ -684,6 +693,159 @@ namespace CG_Project3
                 point.Y += y;
             }
             GenerateLines();
+        }
+    }
+    class PacMan : IShape // -----------------------------------------------------------
+    {
+        public int width { get; set; }
+        public Color color { get; set; }
+        public bool AA { get; set; }
+        public Point center { get; set; }
+        private int radius;
+        /*private int quadrantStart;
+        private int quadrantEnd;
+        private double gradientStart;
+        private double gradientEnd;*/
+        private double startAngle;
+        private double endAngle;
+        public Point b {  get; set; }
+        public Point c { get; set; }
+        private Line ab;
+        private Line ac;
+        private int stride;
+        private bool startAngleSmaller;
+        public PacMan(Point a, Point b, Point c, Color color)
+        {
+            this.color = color;
+            this.center = a;
+            this.b = b;
+            //this.c = c;
+            int dx = b.X - a.X;
+            int dy = b.Y - a.Y;
+            this.radius = (int)Math.Sqrt((double)(dx * dx + dy * dy));
+            double angle;
+            //if (dx != 0)
+                angle = Math.Atan2(dy,dx);
+            //else
+                //angle = double.Pi / 2;
+            /*if (dx > 0)
+                angle += double.Pi;*/
+            this.startAngle = angle;
+
+            dx = c.X - a.X;
+            dy = c.Y - a.Y;
+            //if (dx != 0)
+            angle = Math.Atan2(dy,dx);
+            //else
+                //angle = double.Pi / 2;
+            /*if (dx > 0)
+                angle += double.Pi;*/
+            this.endAngle = angle;
+
+            startAngleSmaller = (this.startAngle < this.endAngle);
+
+            this.c = new Point((int)((double)radius*Math.Cos(endAngle)) + center.X, (int)((double)radius * Math.Sin(endAngle))+center.Y);
+            this.ab = new Line(this.center, this.b, color);
+            this.ac = new Line(this.center, this.c, color);
+            /*this.gradientStart = (double)dy / (double)dx;
+            if (dx >= 0 && dy >= 0)
+                this.quadrantStart = 1;
+            else if (dx >= 0 && dy < 0)
+                this.quadrantStart = 2;
+            else if (dx < 0 && dy < 0)
+                this.quadrantStart = 3;
+            else
+                this.quadrantStart = 4;
+            this.gradientEnd = (double)dy / (double)dx;
+            if (dx >= 0 && dy >= 0)
+                this.quadrantEnd = 1;
+            else if (dx >= 0 && dy < 0)
+                this.quadrantEnd = 2;
+            else if (dx < 0 && dy < 0)
+                this.quadrantEnd = 3;
+            else
+                this.quadrantEnd = 4;*/
+        }
+        public void Draw(byte[] bitmap, int stride)
+        {
+            int i;
+            //start with the cirle :::::::::::::::::::::
+            this.stride = stride;
+            int x = radius;
+            int y = 0;
+            int P = 1 - radius;
+            PixelSet(bitmap, x, 0, color);
+            PixelSet(bitmap, -x,0, color);
+            PixelSet(bitmap, 0,x, color);
+            PixelSet(bitmap, 0, -x, color);
+            while (x > y)
+            {
+                y++;
+
+                if (P <= 0)
+                    P = P + 2 * y + 1;
+                else
+                {
+                    x--;
+                    P = P + 2 * y - 2 * x + 1;
+                }
+
+                if (x < y)
+                    break;
+                
+                
+                PixelSet(bitmap, x, y, color);
+                PixelSet(bitmap, -x, y, color);
+                PixelSet(bitmap, x, -y, color);
+                PixelSet(bitmap, -x, -y, color);
+                if (x != y)
+                {
+                    PixelSet(bitmap, y, x, color);
+                    PixelSet(bitmap, y, -x, color);
+                    PixelSet(bitmap, -y, x, color);
+                    PixelSet(bitmap, -y, -x, color);
+                }
+            }
+
+            //draw the lines :::::::::::::::::::::::::::
+            ab.Draw(bitmap, stride);
+            ac.Draw(bitmap, stride);
+        }
+        public void Move(int x, int y)
+        {
+            ; // not implemented
+        }
+        public List<Vertex> GetVertices()
+        {
+            return new List<Vertex>(); // not implemented
+        }
+        private void PixelSet(byte[] pictureData, int x, int y, Color c)
+        {
+            int i = (y + this.center.Y) * this.stride + (x + this.center.X) * 3;
+            if (i < 0 || i + 2 >= pictureData.Length)
+                return;
+            if (!CheckPoint(x, y))
+                return;
+            pictureData[i] = (byte)c.B;
+            pictureData[i + 1] = (byte)c.G;
+            pictureData[i + 2] = (byte)c.R;
+        }
+        private bool CheckPoint(int dx, int dy)
+        {
+            //return true;
+            double angle = Math.Atan2(dy,dx);
+
+            if(startAngleSmaller)
+            {
+                if (angle <= startAngle || angle >= endAngle)
+                    return false;
+            }
+            else
+            {
+                if (angle >= startAngle || angle <= endAngle)
+                    return false;
+            }
+            return true;
         }
     }
 }
