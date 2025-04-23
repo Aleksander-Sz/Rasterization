@@ -11,6 +11,8 @@ namespace CG_Project3
         Color currentColor;
         List<Vertex> vertices;
         const int CLICK_DISTANCE = 1000;
+        Vertex activeVertex;
+        DateTime prevClick;
         public Form1()
         {
             InitializeComponent();
@@ -152,12 +154,12 @@ namespace CG_Project3
             }
         }
 
-        private void pictureBox_MouseClick(object sender, MouseEventArgs e)
+        private void pictureBoxSingleClick(object sender, MouseEventArgs e)
         {
             int x = e.X;
             int y = e.Y;
             int dx, dy;
-            if (prevPoints.Count == 0 && comboBox1.SelectedIndex<5)
+            if (prevPoints.Count == 0 && comboBox1.SelectedIndex < 5)
             {
                 prevPoints.Add(new Point(x, y));
                 label1.Text = "Select the second point.";
@@ -211,7 +213,7 @@ namespace CG_Project3
                         prevPoints.Clear();
                         label1.Text = "Select the first point.";
                         break;
-                    case 6:
+                    case 6: // change color
                         foreach (Vertex vertex in vertices)
                         {
                             dx = vertex.Point.X - x;
@@ -223,7 +225,7 @@ namespace CG_Project3
                             }
                         }
                         break;
-                    case 7:
+                    case 7: // change width
                         foreach (Vertex vertex in vertices)
                         {
                             dx = vertex.Point.X - x;
@@ -235,12 +237,12 @@ namespace CG_Project3
                             }
                         }
                         break;
-                    case 8:
-                        foreach(Vertex vertex in vertices)
+                    case 8: // delete
+                        foreach (Vertex vertex in vertices)
                         {
                             dx = vertex.Point.X - x;
                             dy = vertex.Point.Y - y;
-                            if (dx*dx+dy*dy<CLICK_DISTANCE)
+                            if (dx * dx + dy * dy < CLICK_DISTANCE)
                             {
                                 List<Vertex> toBeRemoved = new List<Vertex>();
                                 foreach (Vertex vertex2 in vertices)
@@ -253,13 +255,13 @@ namespace CG_Project3
                                 foreach (Vertex vertex3 in toBeRemoved)
                                 {
                                     vertices.Remove(vertex3);
-                                }    
+                                }
                                 Shapes.Remove(vertex.Owner);
                                 break;
                             }
                         }
                         break;
-                       
+
                 }
                 DrawShapes();
             }
@@ -282,6 +284,47 @@ namespace CG_Project3
         {
             Shapes.Add(shape);
             vertices.AddRange(shape.GetVertices());
+        }
+
+        private void pictureBox_MouseDown(object sender, MouseEventArgs e)
+        {
+            prevClick = DateTime.Now;
+            int x = e.X;
+            int y = e.Y;
+            int dx, dy;
+            foreach (Vertex vertex in vertices)
+            {
+                dx = vertex.Point.X - x;
+                dy = vertex.Point.Y - y;
+                if (dx * dx + dy * dy < CLICK_DISTANCE)
+                {
+                    activeVertex = vertex;
+                    break;
+                }
+            }
+        }
+
+        private void pictureBox_MouseUp(object sender, MouseEventArgs e)
+        {
+            TimeSpan elapsed = DateTime.Now - prevClick;
+            if(elapsed.TotalMilliseconds<250)
+            {
+                pictureBoxSingleClick(sender, e);
+            }
+            activeVertex = null;
+        }
+
+        private void pictureBox_MouseMove(object sender, MouseEventArgs e)
+        {
+            TimeSpan elapsed = DateTime.Now - prevClick;
+            if (activeVertex == null || elapsed.TotalMilliseconds < 250)
+                return;
+            int x = e.X;
+            int y = e.Y;
+            activeVertex.Point = new Point(x, y);
+            /*((Line)Shapes[0]).a.X = x;
+            ((Line)Shapes[0]).a.Y = y;*/
+            DrawShapes();
         }
     }
 }

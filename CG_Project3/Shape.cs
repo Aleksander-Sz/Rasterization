@@ -118,7 +118,31 @@ namespace CG_Project3
     internal class ThickLine : IShape
     {
         Point a, b;
-        public int width { get; set; }
+        private int _width;
+        public int width
+        {
+            get
+            {
+                return _width;
+            }
+            set
+            {
+                _width = value;
+                brush = new int[_width, _width];
+                for (int xo = 0; xo < this._width; xo++)
+                {
+                    for (int yo = 0; yo < this._width; yo++)
+                    {
+                        if ((xo - (_width / 2)) * (xo - (_width / 2)) + (yo - (_width / 2)) * (yo - (_width / 2)) <= _width * _width / 4)
+                        {
+                            brush[xo, yo] = 1;
+                        }
+                        else
+                            brush[xo, yo] = 0;
+                    }
+                }
+            }
+        }
         public Color color { get; set; }
         int[,] brush;
         public ThickLine(Point a, Point b, int width, Color color)
@@ -127,7 +151,7 @@ namespace CG_Project3
             this.b = b;
             this.width = width;
             this.color = color;
-            brush = new int[width, width];
+            /*brush = new int[width, width];
             for (int xo = 0; xo < this.width; xo++)
             {
                 for (int yo = 0; yo < this.width; yo++)
@@ -139,7 +163,7 @@ namespace CG_Project3
                     else
                         brush[xo, yo] = 0;
                 }
-            }
+            }*/
         }
         public ThickLine(string text) : this(
             new Point(Int32.Parse(text.Split(',')[0]), Int32.Parse(text.Split(',')[1])),
