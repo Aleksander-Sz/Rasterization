@@ -12,6 +12,7 @@ namespace CG_Project3
     internal interface IShape
     {
         public Color color { get; set; }
+        public int width { get; set; }
         public void Draw(byte[] bitmap, int stride);
         public List<Vertex> GetVertices();
     }
@@ -19,11 +20,13 @@ namespace CG_Project3
     {
         public Point a, b;
         public Color color { get; set; }
+        public int width { get; set; }
         public Line(Point a, Point b, Color color)
         {
             this.a = a;
             this.b = b;
             this.color = color;
+            this.width = 1;
         }
         public Line(string text)
         {
@@ -31,6 +34,7 @@ namespace CG_Project3
             a = new Point(Int32.Parse(elements[0]), Int32.Parse(elements[1]));
             b = new Point(Int32.Parse(elements[2]), Int32.Parse(elements[3]));
             color = Color.FromArgb(Convert.ToInt32(elements[4], 16));
+            width = 1;
         }
         public void Draw(byte[] bitmap, int stride)
         {
@@ -114,7 +118,7 @@ namespace CG_Project3
     internal class ThickLine : IShape
     {
         Point a, b;
-        int width;
+        public int width { get; set; }
         public Color color { get; set; }
         int[,] brush;
         public ThickLine(Point a, Point b, int width, Color color)
@@ -237,12 +241,14 @@ namespace CG_Project3
     {
         public Point center;
         public int radius;
+        public int width { get; set; }
         public Color color { get; set; }
         public Circle(Point center, int radius, Color color)
         {
             this.center = center;
             this.radius = radius;
             this.color = color;
+            this.width = 1;
         }
         public Circle(string text)
         {
@@ -250,6 +256,7 @@ namespace CG_Project3
             center = new Point(Int32.Parse(elements[0]), Int32.Parse(elements[1]));
             radius = Int32.Parse(elements[2]);
             color = Color.FromArgb(Convert.ToInt32(elements[3], 16));
+            width = 1;
         }
         public void Draw(byte[] bitmap, int stride) // loosely based on this: https://www.geeksforgeeks.org/mid-point-circle-drawing-algorithm/
         {
@@ -328,7 +335,7 @@ namespace CG_Project3
     {
         public Point a, b;
         public Color color { get; set; }
-        private int width;
+        public int width { get; set; }
         public AALine(Point a, Point b, int width, Color color)
         {
             this.a = a;
@@ -454,15 +461,39 @@ namespace CG_Project3
     class Polygon : IShape
     {
         protected List<Point> points;
-        private int width;
-        public Color color { get; set; }
+        private int _width;
+        private Color _color;
+        public int width
+        {
+            get
+            {
+                return _width;
+            }
+            set
+            {
+                _width = value;
+                GenerateLines();
+            }
+        }
+        public Color color
+        {
+            get
+            {
+                return _color;
+            }
+            set
+            {
+                _color = value;
+                GenerateLines();
+            }
+        }
         private List<ThickLine> lines;
         public bool Closed;
         public Polygon(Color color, List<Point> points, int width = 1, bool closed = true)
         {
-            this.color = color;
+            this._color = color;
             this.points = points;
-            this.width = width;
+            this._width = width;
             this.lines = new List<ThickLine>();
             this.Closed = closed;
             //GenerateLines();
@@ -486,11 +517,11 @@ namespace CG_Project3
             this.lines.Clear();
             for(int i = 0; i<points.Count-1;i++)
             {
-                lines.Add(new ThickLine(points[i], points[i+1],this.width,this.color));
+                lines.Add(new ThickLine(points[i], points[i+1],this._width,this._color));
             }
             if(Closed)
             {
-                lines.Add(new ThickLine(points.Last(), points[0], this.width, this.color));
+                lines.Add(new ThickLine(points.Last(), points[0], this._width, this._color));
             }
         }
         public override string ToString()
@@ -500,7 +531,7 @@ namespace CG_Project3
             {
                 pointsText += point.X.ToString() + "," + point.Y.ToString() + ",";
             }
-            return "P;" + string.Format("{0:x6}", color.ToArgb()) + "," + this.width.ToString() + "," + ((this.Closed==true) ? "C" : "O") + "|" + pointsText;
+            return "P;" + string.Format("{0:x6}", this._color.ToArgb()) + "," + this._width.ToString() + "," + ((this.Closed==true) ? "C" : "O") + "|" + pointsText;
         }
         public void Draw(byte[] bitmap, int stride)
         {
@@ -521,7 +552,7 @@ namespace CG_Project3
                 GenerateLines();
                 return;
             }
-            lines.Add(new ThickLine(points[points.Count - 2], point, this.width, this.color));
+            lines.Add(new ThickLine(points[points.Count - 2], point, this._width, this._color));
         }
         public List<Vertex> GetVertices()
         {

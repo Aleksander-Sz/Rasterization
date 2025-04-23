@@ -24,6 +24,7 @@ namespace CG_Project3
             comboBox1.Items.Add("Anti-Alliased Line");
             comboBox1.Items.Add("Edit Shape");
             comboBox1.Items.Add("Change Color");
+            comboBox1.Items.Add("Change Thickness");
             comboBox1.Items.Add("Delete Shape");
             comboBox1.SelectedIndex = 0;
             label1.Text = "Select the first point.";
@@ -223,6 +224,18 @@ namespace CG_Project3
                         }
                         break;
                     case 7:
+                        foreach (Vertex vertex in vertices)
+                        {
+                            dx = vertex.Point.X - x;
+                            dy = vertex.Point.Y - y;
+                            if (dx * dx + dy * dy < CLICK_DISTANCE)
+                            {
+                                vertex.Owner.width = (int)numericLineWidth.Value;
+                                break;
+                            }
+                        }
+                        break;
+                    case 8:
                         foreach(Vertex vertex in vertices)
                         {
                             dx = vertex.Point.X - x;
