@@ -438,7 +438,7 @@ namespace CG_Project3
         }
         public void Draw(byte[] bitmap, int stride)
         {
-            //RecalcCenter();
+            RecalcCenter();
             int x = this.a.X;
             int y = this.a.Y;
             int dx = Math.Abs(this.b.X - this.a.X);
@@ -567,6 +567,7 @@ namespace CG_Project3
     class Polygon : IShape // -----------------------------------------------------------
     {
         protected List<Point> points;
+        protected List<Point> midpoints;
         private bool aa;
         public bool AA
         {
@@ -637,6 +638,7 @@ namespace CG_Project3
             this.points = points;
             this._width = width;
             this.lines = new List<AALine>();
+            this.midpoints = new List<Point>();
             this._closed = closed;
             this.AA = aa;
             GenerateLines();
@@ -665,6 +667,15 @@ namespace CG_Project3
             if(_closed)
             {
                 lines.Add(new AALine(points.Last(), points[0], this._width, this._color,this.AA));
+            }
+            for( int i = 0; i<lines.Count; i++)
+            {
+                if (i>=midpoints.Count)
+                {
+                    midpoints.Add(lines[i].midpoint);
+                }
+                else
+                    lines[i].midpoint = midpoints[i];
             }
         }
         public override string ToString()

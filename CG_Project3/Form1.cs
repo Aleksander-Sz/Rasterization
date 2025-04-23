@@ -13,6 +13,7 @@ namespace CG_Project3
         const int CLICK_DISTANCE = 1000;
         Vertex activeVertex;
         DateTime prevClick;
+        Point prevMousePosition;
         public Form1()
         {
             InitializeComponent();
@@ -54,6 +55,13 @@ namespace CG_Project3
             {
                 shape.Draw(ImageBytes, stride);
             }
+            /*foreach (Vertex vertex in vertices)
+            {
+                int i = vertex.Point.Y * stride + vertex.Point.X * 3;
+                ImageBytes[i] = (byte)0;
+                ImageBytes[i+1] = (byte)0;
+                ImageBytes[i+2] = (byte)255;
+            }*/
             int width = Image.Width;
             int height = Image.Height;
             Image = Program.ByteArrayToImage(ImageBytes, width, height, stride);
@@ -313,6 +321,7 @@ namespace CG_Project3
             prevClick = DateTime.Now;
             int x = e.X;
             int y = e.Y;
+            prevMousePosition = new Point(x,y);
             int dx, dy;
             foreach (Vertex vertex in vertices)
             {
@@ -386,6 +395,7 @@ namespace CG_Project3
             }
             /*((Line)Shapes[0]).a.X = x;
             ((Line)Shapes[0]).a.Y = y;*/
+            prevMousePosition = new Point(x,y);
             DrawShapes();
         }
 
