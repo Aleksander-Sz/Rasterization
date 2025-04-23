@@ -417,7 +417,7 @@ namespace CG_Project3
         public Color color { get; set; }
         public int width { get; set; }
         public bool AA { get; set; }
-        private Point midpoint;
+        public Point midpoint;
         public AALine(Point a, Point b, int width, Color color, bool aa = false)
         {
             this.a = a;
@@ -438,7 +438,7 @@ namespace CG_Project3
         }
         public void Draw(byte[] bitmap, int stride)
         {
-            RecalcCenter();
+            //RecalcCenter();
             int x = this.a.X;
             int y = this.a.Y;
             int dx = Math.Abs(this.b.X - this.a.X);
@@ -618,16 +618,28 @@ namespace CG_Project3
             }
         }
         private List<AALine> lines;
-        public bool Closed;
+        private bool _closed;
+        public bool Closed
+        {
+            get
+            {
+                return _closed;
+            }
+            set
+            {
+                _closed = value;
+                GenerateLines();
+            }
+        }
         public Polygon(Color color, List<Point> points, int width = 1, bool closed = true, bool aa = false)
         {
             this._color = color;
             this.points = points;
             this._width = width;
             this.lines = new List<AALine>();
-            this.Closed = closed;
+            this._closed = closed;
             this.AA = aa;
-            //GenerateLines();
+            GenerateLines();
         }
         public Polygon(string text) : this(
             Color.FromArgb(Convert.ToInt32(text.Split('|')[0].Split(',')[0], 16)),
@@ -640,7 +652,7 @@ namespace CG_Project3
             {
                 points.Add(new Point(Int32.Parse(pointsText[i * 2]), Int32.Parse(pointsText[i * 2 + 1])));
             }
-            //GenerateLines();
+            GenerateLines();
         }
         private void GenerateLines()
         {
@@ -650,7 +662,7 @@ namespace CG_Project3
             {
                 lines.Add(new AALine(points[i], points[i+1],this._width,this._color,this.AA));
             }
-            if(Closed)
+            if(_closed)
             {
                 lines.Add(new AALine(points.Last(), points[0], this._width, this._color,this.AA));
             }
@@ -662,13 +674,13 @@ namespace CG_Project3
             {
                 pointsText += point.X.ToString() + "," + point.Y.ToString() + ",";
             }
-            return "P;" + string.Format("{0:x6}", this._color.ToArgb()) + "," + this._width.ToString() + "," + ((this.Closed==true) ? "C" : "O") + "|" + pointsText;
+            return "P;" + string.Format("{0:x6}", this._color.ToArgb()) + "," + this._width.ToString() + "," + ((this._closed==true) ? "C" : "O") + "|" + pointsText;
         }
         public void Draw(byte[] bitmap, int stride)
         {
-            if (Closed && lines.Count != points.Count)
+            if (_closed && lines.Count != points.Count)
                 GenerateLines();
-            if (!Closed && lines.Count != points.Count - 1)
+            if (!_closed && lines.Count != points.Count - 1)
                 GenerateLines();
             foreach(AALine line in lines)
             {
@@ -678,7 +690,7 @@ namespace CG_Project3
         public void Add(Point point)
         {
             points.Add(point);
-            if(this.Closed)
+            if(this._closed)
             {
                 GenerateLines();
                 return;
@@ -688,9 +700,19 @@ namespace CG_Project3
         public List<Vertex> GetVertices()
         {
             List<Vertex> rPoints = new List<Vertex>();
-            foreach(Point point in points)
+            /*foreach(Point point in points)
             {
                 rPoints.Add(new Vertex(point, this, Vertex.VertexType.Normal));
+            }
+            foreach(AALine line in lines)
+            {
+                rPoints.Add(new Vertex(line.midpoint,line,Vertex.VertexType.Center));
+            }*/
+            for(int i = 0; i<points.Count; i++)
+            {
+                rPoints.Add(new Vertex(points[i], this, Vertex.VertexType.Normal));
+                if(_closed||i<points.Count-1)
+                    rPoints.Add(new Vertex(lines[i].midpoint, lines[i], Vertex.VertexType.Center));
             }
             return rPoints;
 

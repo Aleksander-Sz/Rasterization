@@ -203,12 +203,19 @@ namespace CG_Project3
                         {
 
                             ((Polygon)Shapes.Last()).Closed = true;
+                            List<Vertex> vertTemp = Shapes.Last().GetVertices();
+                            vertices.Add(vertTemp[vertTemp.Count - 1]);
                             prevPoints.Clear();
                             label1.Text = "Select the first point.";
                             break;
                         }
                         else
+                        { 
                             ((Polygon)Shapes.Last()).Add(new Point(x, y));
+                            List<Vertex> vertTemp = Shapes.Last().GetVertices();
+                            vertices.Add(vertTemp[vertTemp.Count - 2]);
+                            vertices.Add(vertTemp[vertTemp.Count - 1]);
+                        }
                         break;
                     case 4:
                         AddShape(new AALine((Point)prevPoints[0], new Point(x, y), (int)numericLineWidth.Value, currentColor, AACheckBox.Checked));
