@@ -13,7 +13,9 @@ namespace CG_Project3
     {
         public Color color { get; set; }
         public int width { get; set; }
+        public bool AA { get; set; }
         public void Draw(byte[] bitmap, int stride);
+        public void Move(int x, int y);
         public List<Vertex> GetVertices();
     }
     internal class Line : IShape
@@ -21,6 +23,7 @@ namespace CG_Project3
         public Point a, b;
         public Color color { get; set; }
         public int width { get; set; }
+        public bool AA { get; set; }
         public Line(Point a, Point b, Color color)
         {
             this.a = a;
@@ -110,14 +113,22 @@ namespace CG_Project3
             List<Vertex> rPoints = new List<Vertex>();
             rPoints.Add(new Vertex(a, this, Vertex.VertexType.Normal));
             rPoints.Add(new Vertex(b, this, Vertex.VertexType.Normal));
-            rPoints.Add(new Vertex(new Point((a.X + b.X) / 2, (a.Y + b.Y) / 2), this, Vertex.VertexType.Center));
+            //rPoints.Add(new Vertex(new Point((a.X + b.X) / 2, (a.Y + b.Y) / 2), this, Vertex.VertexType.Center));
             return rPoints;
 
+        }
+        public void Move(int x, int y)
+        {
+            a.X += x;
+            a.Y += y;
+            b.X += x;
+            b.Y += y;
         }
     }
     internal class ThickLine : IShape
     {
         Point a, b;
+        public bool AA { get; set; }
         private int _width;
         public int width
         {
@@ -256,37 +267,69 @@ namespace CG_Project3
             List<Vertex> rPoints = new List<Vertex>();
             rPoints.Add(new Vertex(a, this, Vertex.VertexType.Normal));
             rPoints.Add(new Vertex(b, this, Vertex.VertexType.Normal));
-            rPoints.Add(new Vertex(new Point((a.X + b.X) / 2, (a.Y + b.Y) / 2), this, Vertex.VertexType.Center));
+            //rPoints.Add(new Vertex(new Point((a.X + b.X) / 2, (a.Y + b.Y) / 2), this, Vertex.VertexType.Center));
             return rPoints;
 
+        }
+        public void Move(int x, int y)
+        {
+            a.X += x;
+            a.Y += y;
+            b.X += x;
+            b.Y += y;
         }
     }
     internal class Circle : IShape
     {
         public Point center;
-        public int radius;
+        public bool AA { get; set; }
+        private int _radius;
+        public int radius
+        {
+            get
+            {
+                return _radius;
+            }
+            set
+            {
+                _radius = value;
+                this.r.X = center.X + _radius;
+                this.r.Y = center.Y;
+                this.l.X = center.X - _radius;
+                this.l.Y = center.Y;
+                this.b.Y = center.Y + _radius;
+                this.b.X = center.X;
+                this.t.Y = center.Y - _radius;
+                this.t.X = center.X;
+            }
+        }
         public int width { get; set; }
         public Color color { get; set; }
+        private Point r, t, b, l;
         public Circle(Point center, int radius, Color color)
         {
             this.center = center;
-            this.radius = radius;
+            this._radius = radius;
             this.color = color;
             this.width = 1;
+            this.r = new Point(center.X + radius, center.Y);
+            this.l = new Point(center.X - radius, center.Y);
+            this.b = new Point(center.X, center.Y + radius);
+            this.t = new Point(center.X, center.Y - radius);
         }
         public Circle(string text)
         {
             string[] elements = text.Split(',');
             center = new Point(Int32.Parse(elements[0]), Int32.Parse(elements[1]));
-            radius = Int32.Parse(elements[2]);
+            _radius = Int32.Parse(elements[2]);
             color = Color.FromArgb(Convert.ToInt32(elements[3], 16));
             width = 1;
         }
         public void Draw(byte[] bitmap, int stride) // loosely based on this: https://www.geeksforgeeks.org/mid-point-circle-drawing-algorithm/
         {
-            int x = radius;
+            int x = _radius;
             int y = 0;
-            int P = 1 - radius;
+            int P = 1 - _radius;
             int i;
             i = (this.center.Y) * stride + (x + this.center.X) * 3;
             PixelSet(bitmap, i, color);
@@ -333,7 +376,7 @@ namespace CG_Project3
         }
         public override string ToString()
         {
-            return "C;" + center.X.ToString() + "," + center.Y.ToString() + "," + radius.ToString() + "," + string.Format("{0:x6}", color.ToArgb());
+            return "C;" + center.X.ToString() + "," + center.Y.ToString() + "," + _radius.ToString() + "," + string.Format("{0:x6}", color.ToArgb());
         }
         private void PixelSet(byte[] pictureData, int i, Color c)
         {
@@ -346,13 +389,26 @@ namespace CG_Project3
         public List<Vertex> GetVertices()
         {
             List<Vertex> rPoints = new List<Vertex>();
-            rPoints.Add(new Vertex(center, this, Vertex.VertexType.Center));
-            rPoints.Add(new Vertex(new Point(center.X, center.Y + radius), this, Vertex.VertexType.Circumference));
-            rPoints.Add(new Vertex(new Point(center.X, center.Y - radius), this, Vertex.VertexType.Circumference));
-            rPoints.Add(new Vertex(new Point(center.X + radius, center.Y), this, Vertex.VertexType.Circumference));
-            rPoints.Add(new Vertex(new Point(center.X - radius, center.Y), this, Vertex.VertexType.Circumference));
+            rPoints.Add(new Vertex(center, this, Vertex.VertexType.Normal));
+            rPoints.Add(new Vertex(r, this, Vertex.VertexType.Circumference));
+            rPoints.Add(new Vertex(l, this, Vertex.VertexType.Circumference));
+            rPoints.Add(new Vertex(b, this, Vertex.VertexType.Circumference));
+            rPoints.Add(new Vertex(t, this, Vertex.VertexType.Circumference));
             return rPoints;
 
+        }
+        public void Move(int x, int y)
+        {
+            center.X += x;
+            center.Y += y;
+            this.r.X = x + _radius;
+            this.r.Y = y;
+            this.l.X = x - _radius;
+            this.l.Y = y;
+            this.b.Y = y + _radius;
+            this.b.X = x;
+            this.t.Y = y - _radius;
+            this.t.X = x;
         }
     }
     internal class AALine : IShape
@@ -360,12 +416,14 @@ namespace CG_Project3
         public Point a, b;
         public Color color { get; set; }
         public int width { get; set; }
-        public AALine(Point a, Point b, int width, Color color)
+        public bool AA { get; set; }
+        public AALine(Point a, Point b, int width, Color color, bool aa = false)
         {
             this.a = a;
             this.b = b;
-            this.width = width;
+            this.width = width + 2;
             this.color = color;
+            this.AA = aa;
         }
         public AALine(string text)
         {
@@ -374,6 +432,7 @@ namespace CG_Project3
             b = new Point(Int32.Parse(elements[2]), Int32.Parse(elements[3]));
             width = Int32.Parse(elements[4]);
             color = Color.FromArgb(Convert.ToInt32(elements[5], 16));
+            AA = false;
         }
         public void Draw(byte[] bitmap, int stride)
         {
@@ -401,7 +460,11 @@ namespace CG_Project3
                     {
                         int yy = y + offset;
                         double distToCenter = Math.Abs(offset); // perpendicular offset in pixels
-                        double brightness = intensity(distToCenter); // map to [0..1]
+                        double brightness;
+                        if (AA)
+                            brightness = intensity(distToCenter);
+                        else
+                            brightness = 1;
                         if (brightness > 0)
                         {
                             i = (yy * stride) + (x * 3);
@@ -428,7 +491,11 @@ namespace CG_Project3
                     {
                         int xx = x + offset;
                         double distToCenter = Math.Abs(offset);
-                        double brightness = intensity(distToCenter);
+                        double brightness;
+                        if (AA)
+                            brightness = intensity(distToCenter);
+                        else
+                            brightness = 1;
                         if (brightness > 0)
                         {
                             i = (y * stride) + (xx * 3);
@@ -477,14 +544,35 @@ namespace CG_Project3
             List<Vertex> rPoints = new List<Vertex>();
             rPoints.Add(new Vertex(a, this, Vertex.VertexType.Normal));
             rPoints.Add(new Vertex(b, this, Vertex.VertexType.Normal));
-            rPoints.Add(new Vertex(new Point((a.X + b.X) / 2, (a.Y + b.Y) / 2), this, Vertex.VertexType.Center));
+            //rPoints.Add(new Vertex(new Point((a.X + b.X) / 2, (a.Y + b.Y) / 2), this, Vertex.VertexType.Center));
             return rPoints;
 
+        }
+        public void Move(int x, int y)
+        {
+            a.X += x;
+            a.Y += y;
+            b.X += x;
+            b.Y += y;
         }
     }
     class Polygon : IShape
     {
         protected List<Point> points;
+        public bool AA
+        {
+            get
+            {
+                return false;
+            }
+            set
+            {
+                foreach(AALine line in lines)
+                {
+                    line.AA = value;
+                }
+            }
+        }
         private int _width;
         private Color _color;
         public int width
@@ -511,14 +599,14 @@ namespace CG_Project3
                 GenerateLines();
             }
         }
-        private List<ThickLine> lines;
+        private List<AALine> lines;
         public bool Closed;
         public Polygon(Color color, List<Point> points, int width = 1, bool closed = true)
         {
             this._color = color;
             this.points = points;
             this._width = width;
-            this.lines = new List<ThickLine>();
+            this.lines = new List<AALine>();
             this.Closed = closed;
             //GenerateLines();
         }
@@ -541,11 +629,11 @@ namespace CG_Project3
             this.lines.Clear();
             for(int i = 0; i<points.Count-1;i++)
             {
-                lines.Add(new ThickLine(points[i], points[i+1],this._width,this._color));
+                lines.Add(new AALine(points[i], points[i+1],this._width,this._color));
             }
             if(Closed)
             {
-                lines.Add(new ThickLine(points.Last(), points[0], this._width, this._color));
+                lines.Add(new AALine(points.Last(), points[0], this._width, this._color));
             }
         }
         public override string ToString()
@@ -563,7 +651,7 @@ namespace CG_Project3
                 GenerateLines();
             if (!Closed && lines.Count != points.Count - 1)
                 GenerateLines();
-            foreach(ThickLine line in lines)
+            foreach(AALine line in lines)
             {
                 line.Draw(bitmap, stride);
             }
@@ -576,7 +664,7 @@ namespace CG_Project3
                 GenerateLines();
                 return;
             }
-            lines.Add(new ThickLine(points[points.Count - 2], point, this._width, this._color));
+            lines.Add(new AALine(points[points.Count - 2], point, this._width, this._color));
         }
         public List<Vertex> GetVertices()
         {
@@ -587,6 +675,15 @@ namespace CG_Project3
             }
             return rPoints;
 
+        }
+        public void Move(int x, int y)
+        {
+            foreach(Point point in points)
+            {
+                point.X += x;
+                point.Y += y;
+            }
+            GenerateLines();
         }
     }
 }

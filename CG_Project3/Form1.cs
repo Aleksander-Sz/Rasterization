@@ -24,7 +24,7 @@ namespace CG_Project3
             comboBox1.Items.Add("Circle");
             comboBox1.Items.Add("Polygon");
             comboBox1.Items.Add("Anti-Alliased Line");
-            comboBox1.Items.Add("Edit Shape");
+            comboBox1.Items.Add("Move Shape");
             comboBox1.Items.Add("Change Color");
             comboBox1.Items.Add("Change Thickness");
             comboBox1.Items.Add("Delete Shape");
@@ -114,6 +114,7 @@ namespace CG_Project3
                                 break;
                             case 'A':
                                 Shapes.Add(new AALine(elements[1]));
+                                Shapes.Last().AA = AACheckBox.Checked;
                                 break;
                         }
                     }
@@ -209,7 +210,7 @@ namespace CG_Project3
                             ((Polygon)Shapes.Last()).Add(new Point(x, y));
                         break;
                     case 4:
-                        AddShape(new AALine((Point)prevPoints[0], new Point(x, y), (int)numericLineWidth.Value, currentColor));
+                        AddShape(new AALine((Point)prevPoints[0], new Point(x, y), (int)numericLineWidth.Value, currentColor, AACheckBox.Checked));
                         prevPoints.Clear();
                         label1.Text = "Select the first point.";
                         break;
@@ -307,7 +308,7 @@ namespace CG_Project3
         private void pictureBox_MouseUp(object sender, MouseEventArgs e)
         {
             TimeSpan elapsed = DateTime.Now - prevClick;
-            if(elapsed.TotalMilliseconds<250)
+            if (elapsed.TotalMilliseconds < 250)
             {
                 pictureBoxSingleClick(sender, e);
             }
@@ -321,9 +322,56 @@ namespace CG_Project3
                 return;
             int x = e.X;
             int y = e.Y;
-            activeVertex.Point = new Point(x, y);
+            int radius, dx, dy;
+            if (comboBox1.SelectedIndex == 5)
+            {
+                dx = x - activeVertex.Point.X;
+                dy = y - activeVertex.Point.Y;
+                activeVertex.Owner.Move(dx, dy);
+            }
+            else
+            {
+                switch (activeVertex.Type)
+                {
+                    case Vertex.VertexType.Normal:
+                        activeVertex.Point.X = x;
+                        activeVertex.Point.Y = y;
+                        break;
+                    case Vertex.VertexType.Circumference:
+                        dx = ((Circle)activeVertex.Owner).center.X - x;
+                        dy = ((Circle)activeVertex.Owner).center.Y - y;
+                        radius = (int)Math.Sqrt((double)(dx * dx + dy * dy));
+                        ((Circle)activeVertex.Owner).radius = radius;
+                        List<Vertex> toDelete = new List<Vertex>();
+                        foreach (Vertex searchVertex in vertices)
+                        {
+                            if (searchVertex.Owner == activeVertex.Owner)
+                            {
+                                toDelete.Add(searchVertex);
+                            }
+                        }
+                        foreach (Vertex searchVertex2 in toDelete)
+                        {
+                            vertices.Remove(searchVertex2);
+                        }
+                        vertices.AddRange(activeVertex.Owner.GetVertices());
+                        break;
+                    case Vertex.VertexType.Center:
+                        //activeVertex.Owner.Move();
+                        break;
+                }
+            }
             /*((Line)Shapes[0]).a.X = x;
             ((Line)Shapes[0]).a.Y = y;*/
+            DrawShapes();
+        }
+
+        private void AACheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            foreach(IShape shape in Shapes)
+            {
+                shape.AA = AACheckBox.Checked;
+            }
             DrawShapes();
         }
     }

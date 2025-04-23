@@ -1,4 +1,6 @@
-﻿namespace CG_Project3
+﻿using SystemPoint = System.Drawing.Point;
+
+namespace CG_Project3
 {
     partial class Form1
     {
@@ -42,6 +44,7 @@
             label1 = new Label();
             label2 = new Label();
             numericLineWidth = new NumericUpDown();
+            AACheckBox = new CheckBox();
             ((System.ComponentModel.ISupportInitialize)pictureBox).BeginInit();
             menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numericLineWidth).BeginInit();
@@ -50,7 +53,7 @@
             // pictureBox
             // 
             pictureBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            pictureBox.Location = new Point(12, 31);
+            pictureBox.Location = new SystemPoint(12, 31);
             pictureBox.Name = "pictureBox";
             pictureBox.Size = new Size(958, 472);
             pictureBox.SizeMode = PictureBoxSizeMode.CenterImage;
@@ -64,7 +67,7 @@
             // 
             menuStrip1.ImageScalingSize = new Size(20, 20);
             menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem });
-            menuStrip1.Location = new Point(0, 0);
+            menuStrip1.Location = new SystemPoint(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(982, 28);
             menuStrip1.TabIndex = 1;
@@ -109,7 +112,7 @@
             // 
             comboBox1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             comboBox1.FormattingEnabled = true;
-            comboBox1.Location = new Point(12, 513);
+            comboBox1.Location = new SystemPoint(12, 513);
             comboBox1.Name = "comboBox1";
             comboBox1.Size = new Size(151, 28);
             comboBox1.TabIndex = 2;
@@ -117,7 +120,7 @@
             // pickColorButton
             // 
             pickColorButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            pickColorButton.Location = new Point(169, 512);
+            pickColorButton.Location = new SystemPoint(169, 512);
             pickColorButton.Name = "pickColorButton";
             pickColorButton.Size = new Size(123, 28);
             pickColorButton.TabIndex = 3;
@@ -128,7 +131,7 @@
             // panel1
             // 
             panel1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            panel1.Location = new Point(298, 513);
+            panel1.Location = new SystemPoint(298, 513);
             panel1.Name = "panel1";
             panel1.Size = new Size(60, 28);
             panel1.TabIndex = 4;
@@ -138,7 +141,7 @@
             // 
             label1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             label1.AutoSize = true;
-            label1.Location = new Point(364, 516);
+            label1.Location = new SystemPoint(364, 516);
             label1.Name = "label1";
             label1.Size = new Size(50, 20);
             label1.TabIndex = 5;
@@ -148,7 +151,7 @@
             // 
             label2.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             label2.AutoSize = true;
-            label2.Location = new Point(549, 516);
+            label2.Location = new SystemPoint(549, 516);
             label2.Name = "label2";
             label2.Size = new Size(80, 20);
             label2.TabIndex = 6;
@@ -157,17 +160,29 @@
             // numericLineWidth
             // 
             numericLineWidth.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            numericLineWidth.Location = new Point(635, 513);
+            numericLineWidth.Location = new SystemPoint(635, 513);
             numericLineWidth.Name = "numericLineWidth";
             numericLineWidth.Size = new Size(64, 27);
             numericLineWidth.TabIndex = 7;
             numericLineWidth.Value = new decimal(new int[] { 5, 0, 0, 0 });
+            // 
+            // AACheckBox
+            // 
+            AACheckBox.AutoSize = true;
+            AACheckBox.Location = new SystemPoint(705, 515);
+            AACheckBox.Name = "AACheckBox";
+            AACheckBox.Size = new Size(122, 24);
+            AACheckBox.TabIndex = 8;
+            AACheckBox.Text = "Anty Alliasing";
+            AACheckBox.UseVisualStyleBackColor = true;
+            AACheckBox.CheckedChanged += AACheckBox_CheckedChanged;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(982, 553);
+            Controls.Add(AACheckBox);
             Controls.Add(numericLineWidth);
             Controls.Add(label2);
             Controls.Add(label1);
@@ -203,5 +218,6 @@
         private Label label1;
         private Label label2;
         private NumericUpDown numericLineWidth;
+        private CheckBox AACheckBox;
     }
 }
