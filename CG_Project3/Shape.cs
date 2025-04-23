@@ -559,14 +559,16 @@ namespace CG_Project3
     class Polygon : IShape // -----------------------------------------------------------
     {
         protected List<Point> points;
+        private bool aa;
         public bool AA
         {
             get
             {
-                return false;
+                return aa;
             }
             set
             {
+                aa = value;
                 foreach(AALine line in lines)
                 {
                     line.AA = value;
@@ -638,11 +640,11 @@ namespace CG_Project3
             this.lines.Clear();
             for(int i = 0; i<points.Count-1;i++)
             {
-                lines.Add(new AALine(points[i], points[i+1],this._width,this._color));
+                lines.Add(new AALine(points[i], points[i+1],this._width,this._color,this.AA));
             }
             if(Closed)
             {
-                lines.Add(new AALine(points.Last(), points[0], this._width, this._color));
+                lines.Add(new AALine(points.Last(), points[0], this._width, this._color,this.AA));
             }
         }
         public override string ToString()
@@ -673,7 +675,7 @@ namespace CG_Project3
                 GenerateLines();
                 return;
             }
-            lines.Add(new AALine(points[points.Count - 2], point, this._width, this._color));
+            lines.Add(new AALine(points[points.Count - 2], point, this._width, this._color, this.AA));
         }
         public List<Vertex> GetVertices()
         {
