@@ -315,7 +315,10 @@ namespace CG_Project3
         {
             List<Vertex> rPoints = new List<Vertex>();
             rPoints.Add(new Vertex(center, this, Vertex.VertexType.Center));
-            rPoints.Add(new Vertex(new Point(center.X,center.Y+radius), this, Vertex.VertexType.Circumference));
+            rPoints.Add(new Vertex(new Point(center.X, center.Y + radius), this, Vertex.VertexType.Circumference));
+            rPoints.Add(new Vertex(new Point(center.X, center.Y - radius), this, Vertex.VertexType.Circumference));
+            rPoints.Add(new Vertex(new Point(center.X + radius, center.Y), this, Vertex.VertexType.Circumference));
+            rPoints.Add(new Vertex(new Point(center.X - radius, center.Y), this, Vertex.VertexType.Circumference));
             return rPoints;
 
         }

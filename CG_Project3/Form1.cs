@@ -155,18 +155,18 @@ namespace CG_Project3
             int x = e.X;
             int y = e.Y;
             int dx, dy;
-            //check chosen mode
-            if (prevPoints.Count == 0)
+            if (prevPoints.Count == 0 && comboBox1.SelectedIndex<5)
             {
                 prevPoints.Add(new Point(x, y));
                 label1.Text = "Select the second point.";
             }
             else
             {
+                //check chosen mode
                 switch (comboBox1.SelectedIndex)
                 {
                     case 0: // thin line
-                        Shapes.Add(new Line((Point)prevPoints[0], new Point(x, y), currentColor));
+                        AddShape(new Line((Point)prevPoints[0], new Point(x, y), currentColor));
                         prevPoints.Clear();
                         label1.Text = "Select the first point.";
                         break;
@@ -216,18 +216,24 @@ namespace CG_Project3
                             dy = vertex.Point.Y - y;
                             if (dx*dx+dy*dy<CLICK_DISTANCE)
                             {
+                                List<Vertex> toBeRemoved = new List<Vertex>();
                                 foreach (Vertex vertex2 in vertices)
                                 {
-                                    if (vertex.Owner==vertex2.Owner)
+                                    if (vertex.Owner == vertex2.Owner)
                                     {
-                                        vertices.Remove(vertex2);
+                                        toBeRemoved.Add(vertex2);
                                     }
                                 }
+                                foreach (Vertex vertex3 in toBeRemoved)
+                                {
+                                    vertices.Remove(vertex3);
+                                }    
                                 Shapes.Remove(vertex.Owner);
                                 break;
                             }
                         }
                         break;
+                       
                 }
                 DrawShapes();
             }
