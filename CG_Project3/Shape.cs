@@ -11,13 +11,14 @@ namespace CG_Project3
 {
     internal interface IShape
     {
+        public Color color { get; set; }
         public void Draw(byte[] bitmap, int stride);
         public List<Vertex> GetVertices();
     }
     internal class Line : IShape
     {
         public Point a, b;
-        public Color color;
+        public Color color { get; set; }
         public Line(Point a, Point b, Color color)
         {
             this.a = a;
@@ -114,7 +115,7 @@ namespace CG_Project3
     {
         Point a, b;
         int width;
-        Color color;
+        public Color color { get; set; }
         int[,] brush;
         public ThickLine(Point a, Point b, int width, Color color)
         {
@@ -236,7 +237,7 @@ namespace CG_Project3
     {
         public Point center;
         public int radius;
-        public Color color;
+        public Color color { get; set; }
         public Circle(Point center, int radius, Color color)
         {
             this.center = center;
@@ -326,7 +327,7 @@ namespace CG_Project3
     internal class AALine : IShape
     {
         public Point a, b;
-        public Color color;
+        public Color color { get; set; }
         private int width;
         public AALine(Point a, Point b, int width, Color color)
         {
@@ -454,7 +455,7 @@ namespace CG_Project3
     {
         protected List<Point> points;
         private int width;
-        private Color color;
+        public Color color { get; set; }
         private List<ThickLine> lines;
         public bool Closed;
         public Polygon(Color color, List<Point> points, int width = 1, bool closed = true)
