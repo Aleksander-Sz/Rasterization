@@ -371,7 +371,9 @@ namespace CG_Project3
                         vertices.AddRange(activeVertex.Owner.GetVertices());
                         break;
                     case Vertex.VertexType.Center:
-                        //activeVertex.Owner.Move();
+                        dx = x - activeVertex.Point.X;
+                        dy = y - activeVertex.Point.Y;
+                        activeVertex.Owner.Move(dx, dy);
                         break;
                 }
             }

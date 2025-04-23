@@ -417,6 +417,7 @@ namespace CG_Project3
         public Color color { get; set; }
         public int width { get; set; }
         public bool AA { get; set; }
+        private Point midpoint;
         public AALine(Point a, Point b, int width, Color color, bool aa = false)
         {
             this.a = a;
@@ -424,6 +425,7 @@ namespace CG_Project3
             this.width = width + 2;
             this.color = color;
             this.AA = aa;
+            midpoint = new Point((a.X + b.X) / 2, (a.Y + b.Y) / 2);
         }
         public AALine(string text)
         {
@@ -436,6 +438,7 @@ namespace CG_Project3
         }
         public void Draw(byte[] bitmap, int stride)
         {
+            RecalcCenter();
             int x = this.a.X;
             int y = this.a.Y;
             int dx = Math.Abs(this.b.X - this.a.X);
@@ -544,7 +547,7 @@ namespace CG_Project3
             List<Vertex> rPoints = new List<Vertex>();
             rPoints.Add(new Vertex(a, this, Vertex.VertexType.Normal));
             rPoints.Add(new Vertex(b, this, Vertex.VertexType.Normal));
-            //rPoints.Add(new Vertex(new Point((a.X + b.X) / 2, (a.Y + b.Y) / 2), this, Vertex.VertexType.Center));
+            rPoints.Add(new Vertex(midpoint, this, Vertex.VertexType.Center));
             return rPoints;
 
         }
@@ -554,6 +557,11 @@ namespace CG_Project3
             a.Y += y;
             b.X += x;
             b.Y += y;
+        }
+        public void RecalcCenter()
+        {
+            midpoint.X = (a.X + b.X) / 2;
+            midpoint.Y = (a.Y + b.Y) / 2;
         }
     }
     class Polygon : IShape // -----------------------------------------------------------
