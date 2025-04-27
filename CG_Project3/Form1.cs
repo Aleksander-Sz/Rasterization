@@ -222,7 +222,7 @@ namespace CG_Project3
                             break;
                         }
                         else
-                        { 
+                        {
                             ((Polygon)Shapes.Last()).Add(new Point(x, y));
                             List<Vertex> vertTemp = Shapes.Last().GetVertices();
                             vertices.Add(vertTemp[vertTemp.Count - 2]);
@@ -235,50 +235,59 @@ namespace CG_Project3
                         label1.Text = "Select the first point.";
                         break;
                     case 6: // change color
-                        foreach (Vertex vertex in vertices)
+                        foreach (IShape shape in Shapes)
                         {
-                            dx = vertex.Point.X - x;
-                            dy = vertex.Point.Y - y;
-                            if (dx * dx + dy * dy < CLICK_DISTANCE)
+                            foreach (Vertex vertex in shape.GetVertices())
                             {
-                                vertex.Owner.color = currentColor;
-                                break;
+                                dx = vertex.Point.X - x;
+                                dy = vertex.Point.Y - y;
+                                if (dx * dx + dy * dy < CLICK_DISTANCE)
+                                {
+                                    vertex.Owner.color = currentColor;
+                                    break;
+                                }
                             }
                         }
                         break;
                     case 7: // change width
-                        foreach (Vertex vertex in vertices)
+                        foreach (IShape shape in Shapes)
                         {
-                            dx = vertex.Point.X - x;
-                            dy = vertex.Point.Y - y;
-                            if (dx * dx + dy * dy < CLICK_DISTANCE)
+                            foreach (Vertex vertex in shape.GetVertices())
                             {
-                                vertex.Owner.width = (int)numericLineWidth.Value;
-                                break;
+                                dx = vertex.Point.X - x;
+                                dy = vertex.Point.Y - y;
+                                if (dx * dx + dy * dy < CLICK_DISTANCE)
+                                {
+                                    vertex.Owner.width = (int)numericLineWidth.Value;
+                                    break;
+                                }
                             }
                         }
                         break;
                     case 8: // delete
-                        foreach (Vertex vertex in vertices)
+                        foreach (IShape shape in Shapes)
                         {
-                            dx = vertex.Point.X - x;
-                            dy = vertex.Point.Y - y;
-                            if (dx * dx + dy * dy < CLICK_DISTANCE)
+                            foreach (Vertex vertex in shape.GetVertices())
                             {
-                                List<Vertex> toBeRemoved = new List<Vertex>();
-                                foreach (Vertex vertex2 in vertices)
+                                dx = vertex.Point.X - x;
+                                dy = vertex.Point.Y - y;
+                                if (dx * dx + dy * dy < CLICK_DISTANCE)
                                 {
-                                    if (vertex.Owner == vertex2.Owner)
+                                    List<Vertex> toBeRemoved = new List<Vertex>();
+                                    foreach (Vertex vertex2 in vertices)
                                     {
-                                        toBeRemoved.Add(vertex2);
+                                        if (vertex.Owner == vertex2.Owner)
+                                        {
+                                            toBeRemoved.Add(vertex2);
+                                        }
                                     }
+                                    foreach (Vertex vertex3 in toBeRemoved)
+                                    {
+                                        vertices.Remove(vertex3);
+                                    }
+                                    Shapes.Remove(vertex.Owner);
+                                    break;
                                 }
-                                foreach (Vertex vertex3 in toBeRemoved)
-                                {
-                                    vertices.Remove(vertex3);
-                                }
-                                Shapes.Remove(vertex.Owner);
-                                break;
                             }
                         }
                         break;
