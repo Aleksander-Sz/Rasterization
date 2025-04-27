@@ -9,7 +9,6 @@ namespace CG_Project3
         List<IShape> Shapes;
         List<Point> prevPoints;
         Color currentColor;
-        List<Vertex> vertices;
         const int CLICK_DISTANCE = 1000;
         Vertex activeVertex;
         DateTime prevClick;
@@ -33,7 +32,6 @@ namespace CG_Project3
             comboBox1.SelectedIndex = 9;
             label1.Text = "Select the first point.";
             currentColor = Color.White;
-            vertices = new List<Vertex>();
             panel1.BackColor = currentColor;
             Shapes = new List<IShape>();
             /*Shapes.Add(new Line(new Point(400, 200), new Point(100, 50), Color.FromArgb(255, 0, 255, 0)));
@@ -56,9 +54,9 @@ namespace CG_Project3
                 shape.Draw(ImageBytes, stride);
             }
             // diagnostics code, for displaying vertices as red pixels
-            /*foreach(IShape shape in Shapes)
+            /*foreach (IShape shape in Shapes)
             {
-                foreach(Vertex vertex in shape.GetVertices())
+                foreach (Vertex vertex in shape.GetVertices())
                 {
                     int i = vertex.Point.Y * stride + vertex.Point.X * 3;
                     ImageBytes[i] = (byte)0;
@@ -215,8 +213,6 @@ namespace CG_Project3
                         {
 
                             ((Polygon)Shapes.Last()).Closed = true;
-                            List<Vertex> vertTemp = Shapes.Last().GetVertices();
-                            vertices.Add(vertTemp[vertTemp.Count - 1]);
                             prevPoints.Clear();
                             label1.Text = "Select the first point.";
                             break;
@@ -224,9 +220,6 @@ namespace CG_Project3
                         else
                         {
                             ((Polygon)Shapes.Last()).Add(new Point(x, y));
-                            List<Vertex> vertTemp = Shapes.Last().GetVertices();
-                            vertices.Add(vertTemp[vertTemp.Count - 2]);
-                            vertices.Add(vertTemp[vertTemp.Count - 1]);
                         }
                         break;
                     case 4:
@@ -273,18 +266,6 @@ namespace CG_Project3
                                 dy = vertex.Point.Y - y;
                                 if (dx * dx + dy * dy < CLICK_DISTANCE)
                                 {
-                                    List<Vertex> toBeRemoved = new List<Vertex>();
-                                    foreach (Vertex vertex2 in vertices)
-                                    {
-                                        if (vertex.Owner == vertex2.Owner)
-                                        {
-                                            toBeRemoved.Add(vertex2);
-                                        }
-                                    }
-                                    foreach (Vertex vertex3 in toBeRemoved)
-                                    {
-                                        vertices.Remove(vertex3);
-                                    }
                                     Shapes.Remove(vertex.Owner);
                                     break;
                                 }
@@ -326,7 +307,6 @@ namespace CG_Project3
         private void AddShape(IShape shape)
         {
             Shapes.Add(shape);
-            vertices.AddRange(shape.GetVertices());
         }
 
         private void pictureBox_MouseDown(object sender, MouseEventArgs e)
@@ -336,16 +316,6 @@ namespace CG_Project3
             int y = e.Y;
             prevMousePosition = new Point(x, y);
             int dx, dy;
-            /*foreach (Vertex vertex in vertices)
-            {
-                dx = vertex.Point.X - x;
-                dy = vertex.Point.Y - y;
-                if (dx * dx + dy * dy < CLICK_DISTANCE)
-                {
-                    activeVertex = vertex;
-                    break;
-                }
-            }*/
             foreach (IShape shape in Shapes)
             {
                 foreach (Vertex vertex in shape.GetVertices())
@@ -399,18 +369,6 @@ namespace CG_Project3
                         radius = (int)Math.Sqrt((double)(dx * dx + dy * dy));
                         ((Circle)activeVertex.Owner).radius = radius;
                         List<Vertex> toDelete = new List<Vertex>();
-                        foreach (Vertex searchVertex in vertices)
-                        {
-                            if (searchVertex.Owner == activeVertex.Owner)
-                            {
-                                toDelete.Add(searchVertex);
-                            }
-                        }
-                        foreach (Vertex searchVertex2 in toDelete)
-                        {
-                            vertices.Remove(searchVertex2);
-                        }
-                        vertices.AddRange(activeVertex.Owner.GetVertices());
                         break;
                     case Vertex.VertexType.Center:
                         dx = x - activeVertex.Point.X;
@@ -419,8 +377,6 @@ namespace CG_Project3
                         break;
                 }
             }
-            /*((Line)Shapes[0]).a.X = x;
-            ((Line)Shapes[0]).a.Y = y;*/
             prevMousePosition = new Point(x,y);
             DrawShapes();
         }
