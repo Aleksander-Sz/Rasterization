@@ -55,12 +55,16 @@ namespace CG_Project3
             {
                 shape.Draw(ImageBytes, stride);
             }
-            /*foreach (Vertex vertex in vertices)
+            // diagnostics code, for displaying vertices as red pixels
+            /*foreach(IShape shape in Shapes)
             {
-                int i = vertex.Point.Y * stride + vertex.Point.X * 3;
-                ImageBytes[i] = (byte)0;
-                ImageBytes[i+1] = (byte)0;
-                ImageBytes[i+2] = (byte)255;
+                foreach(Vertex vertex in shape.GetVertices())
+                {
+                    int i = vertex.Point.Y * stride + vertex.Point.X * 3;
+                    ImageBytes[i] = (byte)0;
+                    ImageBytes[i + 1] = (byte)0;
+                    ImageBytes[i + 2] = (byte)255;
+                }
             }*/
             int width = Image.Width;
             int height = Image.Height;
@@ -321,9 +325,9 @@ namespace CG_Project3
             prevClick = DateTime.Now;
             int x = e.X;
             int y = e.Y;
-            prevMousePosition = new Point(x,y);
+            prevMousePosition = new Point(x, y);
             int dx, dy;
-            foreach (Vertex vertex in vertices)
+            /*foreach (Vertex vertex in vertices)
             {
                 dx = vertex.Point.X - x;
                 dy = vertex.Point.Y - y;
@@ -331,6 +335,19 @@ namespace CG_Project3
                 {
                     activeVertex = vertex;
                     break;
+                }
+            }*/
+            foreach (IShape shape in Shapes)
+            {
+                foreach (Vertex vertex in shape.GetVertices())
+                {
+                    dx = vertex.Point.X - x;
+                    dy = vertex.Point.Y - y;
+                    if (dx * dx + dy * dy < CLICK_DISTANCE)
+                    {
+                        activeVertex = vertex;
+                        break;
+                    }
                 }
             }
         }
