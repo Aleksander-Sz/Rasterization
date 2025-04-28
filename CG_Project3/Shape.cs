@@ -54,8 +54,6 @@ namespace CG_Project3
             if (dy <= dx)
             {
                 d = dy - (dx / 2);
-                /*i = y * stride + x * 3;
-                bitmap[i] = bitmap[i + 1] = bitmap[i + 2] = (byte)255;*/
                 for (int step = 0; step <= dx; step++)
                 {
                     x += sx;
@@ -77,8 +75,6 @@ namespace CG_Project3
             else
             {
                 d = dx - (dy / 2);
-                /*i = y * stride + x * 3;
-                bitmap[i] = bitmap[i + 1] = bitmap[i + 2] = (byte)255;*/
                 for (int step = 0; step <= dy; step++)
                 {
                     y += sy;
@@ -164,19 +160,6 @@ namespace CG_Project3
             this.b = b;
             this.width = width;
             this.color = color;
-            /*brush = new int[width, width];
-            for (int xo = 0; xo < this.width; xo++)
-            {
-                for (int yo = 0; yo < this.width; yo++)
-                {
-                    if ((xo - (width / 2)) * (xo - (width / 2)) + (yo - (width / 2)) * (yo - (width / 2)) <= width * width / 4)
-                    {
-                        brush[xo, yo] = 1;
-                    }
-                    else
-                        brush[xo, yo] = 0;
-                }
-            }*/
         }
         public ThickLine(string text) : this(
             new Point(Int32.Parse(text.Split(',')[0]), Int32.Parse(text.Split(',')[1])),
@@ -197,8 +180,6 @@ namespace CG_Project3
             if (dy <= dx)
             {
                 d = dy - (dx / 2);
-                /*i = y * stride + x * 3;
-                bitmap[i] = bitmap[i + 1] = bitmap[i + 2] = (byte)255;*/
                 for (int step = 0; step <= dx; step++)
                 {
                     x += sx;
@@ -219,8 +200,6 @@ namespace CG_Project3
             else
             {
                 d = dx - (dy / 2);
-                /*i = y * stride + x * 3;
-                bitmap[i] = bitmap[i + 1] = bitmap[i + 2] = (byte)255;*/
                 for (int step = 0; step <= dy; step++)
                 {
                     y += sy;
@@ -713,14 +692,6 @@ namespace CG_Project3
         public List<Vertex> GetVertices()
         {
             List<Vertex> rPoints = new List<Vertex>();
-            /*foreach(Point point in points)
-            {
-                rPoints.Add(new Vertex(point, this, Vertex.VertexType.Normal));
-            }
-            foreach(AALine line in lines)
-            {
-                rPoints.Add(new Vertex(line.midpoint,line,Vertex.VertexType.Center));
-            }*/
             for(int i = 0; i<points.Count; i++)
             {
                 rPoints.Add(new Vertex(points[i], this, Vertex.VertexType.Normal));
@@ -760,10 +731,6 @@ namespace CG_Project3
         public bool AA { get; set; }
         public Point center { get; set; }
         private int radius;
-        /*private int quadrantStart;
-        private int quadrantEnd;
-        private double gradientStart;
-        private double gradientEnd;*/
         private double startAngle;
         private double endAngle;
         public Point b {  get; set; }
@@ -777,27 +744,16 @@ namespace CG_Project3
             this._color = color;
             this.center = a;
             this.b = b;
-            //this.c = c;
             int dx = b.X - a.X;
             int dy = b.Y - a.Y;
             this.radius = (int)Math.Sqrt((double)(dx * dx + dy * dy));
             double angle;
-            //if (dx != 0)
                 angle = Math.Atan2(dy,dx);
-            //else
-                //angle = double.Pi / 2;
-            /*if (dx > 0)
-                angle += double.Pi;*/
             this.startAngle = angle;
 
             dx = c.X - a.X;
             dy = c.Y - a.Y;
-            //if (dx != 0)
             angle = Math.Atan2(dy,dx);
-            //else
-                //angle = double.Pi / 2;
-            /*if (dx > 0)
-                angle += double.Pi;*/
             this.endAngle = angle;
 
             startAngleSmaller = (this.startAngle < this.endAngle);
@@ -805,24 +761,6 @@ namespace CG_Project3
             this.c = new Point((int)((double)radius*Math.Cos(endAngle)) + center.X, (int)((double)radius * Math.Sin(endAngle))+center.Y);
             this.ab = new Line(this.center, this.b, color);
             this.ac = new Line(this.center, this.c, color);
-            /*this.gradientStart = (double)dy / (double)dx;
-            if (dx >= 0 && dy >= 0)
-                this.quadrantStart = 1;
-            else if (dx >= 0 && dy < 0)
-                this.quadrantStart = 2;
-            else if (dx < 0 && dy < 0)
-                this.quadrantStart = 3;
-            else
-                this.quadrantStart = 4;
-            this.gradientEnd = (double)dy / (double)dx;
-            if (dx >= 0 && dy >= 0)
-                this.quadrantEnd = 1;
-            else if (dx >= 0 && dy < 0)
-                this.quadrantEnd = 2;
-            else if (dx < 0 && dy < 0)
-                this.quadrantEnd = 3;
-            else
-                this.quadrantEnd = 4;*/
         }
         public void Draw(byte[] bitmap, int stride)
         {
