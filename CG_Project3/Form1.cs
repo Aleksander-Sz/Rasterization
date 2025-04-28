@@ -32,6 +32,11 @@ namespace CG_Project3
             int mode = Settings1.Default.Mode;
             if (mode < 0 || mode > 9)
                 mode = 0;
+            currentColor = Settings1.Default.Color;
+            int width = Settings1.Default.Width;
+            if (width < 1 || width > 100)
+                width = 5;
+            numericLineWidth.Value = width;
             comboBox1.SelectedIndex = mode;
             label1.Text = "Select the first point.";
             currentColor = Color.White;
@@ -396,6 +401,8 @@ namespace CG_Project3
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             Settings1.Default.Mode = comboBox1.SelectedIndex;
+            Settings1.Default.Color = this.currentColor;
+            Settings1.Default.Width = (int)numericLineWidth.Value;
             Settings1.Default.Save();
         }
     }
