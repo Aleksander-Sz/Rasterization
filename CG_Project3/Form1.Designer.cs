@@ -35,6 +35,7 @@ namespace CG_Project3
             fileToolStripMenuItem = new ToolStripMenuItem();
             saveToolStripMenuItem = new ToolStripMenuItem();
             loadFileToolStripMenuItem = new ToolStripMenuItem();
+            setBackgroundColorToolStripMenuItem = new ToolStripMenuItem();
             clearToolStripMenuItem = new ToolStripMenuItem();
             exportImageToolStripMenuItem = new ToolStripMenuItem();
             comboBox1 = new ComboBox();
@@ -75,7 +76,7 @@ namespace CG_Project3
             // 
             // fileToolStripMenuItem
             // 
-            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { saveToolStripMenuItem, loadFileToolStripMenuItem, clearToolStripMenuItem, exportImageToolStripMenuItem });
+            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { saveToolStripMenuItem, loadFileToolStripMenuItem, setBackgroundColorToolStripMenuItem, clearToolStripMenuItem, exportImageToolStripMenuItem });
             fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             fileToolStripMenuItem.Size = new Size(46, 24);
             fileToolStripMenuItem.Text = "File";
@@ -83,28 +84,35 @@ namespace CG_Project3
             // saveToolStripMenuItem
             // 
             saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            saveToolStripMenuItem.Size = new Size(181, 26);
+            saveToolStripMenuItem.Size = new Size(236, 26);
             saveToolStripMenuItem.Text = "Save";
             saveToolStripMenuItem.Click += saveToolStripMenuItem_Click;
             // 
             // loadFileToolStripMenuItem
             // 
             loadFileToolStripMenuItem.Name = "loadFileToolStripMenuItem";
-            loadFileToolStripMenuItem.Size = new Size(181, 26);
+            loadFileToolStripMenuItem.Size = new Size(236, 26);
             loadFileToolStripMenuItem.Text = "Load File";
             loadFileToolStripMenuItem.Click += loadFileToolStripMenuItem_Click;
+            // 
+            // setBackgroundColorToolStripMenuItem
+            // 
+            setBackgroundColorToolStripMenuItem.Name = "setBackgroundColorToolStripMenuItem";
+            setBackgroundColorToolStripMenuItem.Size = new Size(236, 26);
+            setBackgroundColorToolStripMenuItem.Text = "Set Background Color";
+            setBackgroundColorToolStripMenuItem.Click += setBackgroundColorToolStripMenuItem_Click;
             // 
             // clearToolStripMenuItem
             // 
             clearToolStripMenuItem.Name = "clearToolStripMenuItem";
-            clearToolStripMenuItem.Size = new Size(181, 26);
+            clearToolStripMenuItem.Size = new Size(236, 26);
             clearToolStripMenuItem.Text = "Clear";
             clearToolStripMenuItem.Click += clearToolStripMenuItem_Click;
             // 
             // exportImageToolStripMenuItem
             // 
             exportImageToolStripMenuItem.Name = "exportImageToolStripMenuItem";
-            exportImageToolStripMenuItem.Size = new Size(181, 26);
+            exportImageToolStripMenuItem.Size = new Size(236, 26);
             exportImageToolStripMenuItem.Text = "Export Image";
             exportImageToolStripMenuItem.Click += exportImageToolStripMenuItem_Click;
             // 
@@ -168,6 +176,7 @@ namespace CG_Project3
             // 
             // AACheckBox
             // 
+            AACheckBox.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             AACheckBox.AutoSize = true;
             AACheckBox.Location = new SystemPoint(705, 515);
             AACheckBox.Name = "AACheckBox";
@@ -220,5 +229,6 @@ namespace CG_Project3
         private Label label2;
         private NumericUpDown numericLineWidth;
         private CheckBox AACheckBox;
+        private ToolStripMenuItem setBackgroundColorToolStripMenuItem;
     }
 }

@@ -1,3 +1,4 @@
+using System.Drawing;
 using System.Windows.Forms;
 using static System.Windows.Forms.LinkLabel;
 
@@ -13,6 +14,7 @@ namespace CG_Project3
         Vertex activeVertex;
         DateTime prevClick;
         Point prevMousePosition;
+        Color backgroundColor;
         public Form1()
         {
             InitializeComponent();
@@ -40,6 +42,7 @@ namespace CG_Project3
             comboBox1.SelectedIndex = mode;
             label1.Text = "Select the first point.";
             panel1.BackColor = currentColor;
+            backgroundColor = Settings1.Default.BackgroundColor;
             Shapes = new List<IShape>();
             /*Shapes.Add(new Line(new Point(400, 200), new Point(100, 50), Color.FromArgb(255, 0, 255, 0)));
             Shapes.Add(new Line(new Point(600, 300), new Point(400, 50), Color.FromArgb(255, 255, 0, 0)));
@@ -54,8 +57,20 @@ namespace CG_Project3
         {
             int stride;
             Image.Dispose();
-            Image = new Bitmap(pictureBox.Width, pictureBox.Height); ;
+            Image = new Bitmap(pictureBox.Width, pictureBox.Height);
+            int width = Image.Width;
+            int height = Image.Height;
             byte[] ImageBytes = Program.ImageToByteArray(Image, out stride);
+            for(int x = 0; x<width;x++)
+            {
+                for(int y=0;y<height;y++)
+                {
+                    int i = y * stride + x * 3;
+                    ImageBytes[i] = (byte)backgroundColor.B;
+                    ImageBytes[i + 1] = (byte)backgroundColor.G;
+                    ImageBytes[i + 2] = (byte)backgroundColor.R;
+                }
+            }
             foreach (IShape shape in Shapes)
             {
                 shape.Draw(ImageBytes, stride);
@@ -71,8 +86,6 @@ namespace CG_Project3
                     ImageBytes[i + 2] = (byte)255;
                 }
             }*/
-            int width = Image.Width;
-            int height = Image.Height;
             Image = Program.ByteArrayToImage(ImageBytes, width, height, stride);
             pictureBox.Image = Image;
         }
@@ -90,6 +103,10 @@ namespace CG_Project3
                     {
                         using (StreamWriter outputFile = new StreamWriter(saveFileDialog.FileName))
                         {
+                            string backgroundString = "b;";
+                            backgroundString += string.Format("{0:x6}", backgroundColor.ToArgb());
+                            outputFile.WriteLine(backgroundString);
+                            outputFile.WriteLine("a;"+(AACheckBox.Checked ? "1" : "0"));
                             foreach (IShape shape in Shapes)
                                 outputFile.WriteLine(shape.ToString());
                         }
@@ -118,6 +135,13 @@ namespace CG_Project3
                         string[] elements = line.Split(';');
                         switch (elements[0][0])
                         {
+                            case 'b':
+                                backgroundColor = Color.FromArgb(Convert.ToInt32(elements[1],16));
+                                break;
+                            case 'a':
+                                AACheckBox.Checked = (elements[1][0] != '1');
+                                AAChange();
+                                break;
                             case 'L':
                                 Shapes.Add(new Line(elements[1]));
                                 break;
@@ -390,6 +414,10 @@ namespace CG_Project3
 
         private void AACheckBox_CheckedChanged(object sender, EventArgs e)
         {
+            AAChange();
+        }
+        private void AAChange()
+        {
             foreach (IShape shape in Shapes)
             {
                 shape.AA = AACheckBox.Checked;
@@ -402,7 +430,17 @@ namespace CG_Project3
             Settings1.Default.Mode = comboBox1.SelectedIndex;
             Settings1.Default.Color = currentColor;
             Settings1.Default.Width = (int)numericLineWidth.Value;
+            Settings1.Default.BackgroundColor = backgroundColor;
             Settings1.Default.Save();
+        }
+
+        private void setBackgroundColorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (colorDialog1.ShowDialog() == DialogResult.OK)
+            {
+                backgroundColor = colorDialog1.Color;
+                DrawShapes();
+            }
         }
     }
 }

@@ -416,6 +416,7 @@ namespace CG_Project3
             width = Int32.Parse(elements[4]);
             color = Color.FromArgb(Convert.ToInt32(elements[5], 16));
             AA = false;
+            midpoint = new Point((a.X + b.X) / 2, (a.Y + b.Y) / 2);
         }
         public void Draw(byte[] bitmap, int stride)
         {
