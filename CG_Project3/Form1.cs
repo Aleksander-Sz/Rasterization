@@ -29,7 +29,10 @@ namespace CG_Project3
             comboBox1.Items.Add("Change Thickness");
             comboBox1.Items.Add("Delete Shape");
             comboBox1.Items.Add("PacMan");
-            comboBox1.SelectedIndex = 9;
+            int mode = Settings1.Default.Mode;
+            if (mode < 0 || mode > 9)
+                mode = 0;
+            comboBox1.SelectedIndex = mode;
             label1.Text = "Select the first point.";
             currentColor = Color.White;
             panel1.BackColor = currentColor;
@@ -275,12 +278,12 @@ namespace CG_Project3
                     case 9:
                         if (prevPoints.Count == 2)
                         {
-                            Shapes.Add(new PacMan(prevPoints[0], prevPoints[1], new Point(x,y),currentColor));
+                            Shapes.Add(new PacMan(prevPoints[0], prevPoints[1], new Point(x, y), currentColor));
                             prevPoints.Clear();
                             label1.Text = "Select the first point.";
                             break;
                         }
-                        if(prevPoints.Count == 0)
+                        if (prevPoints.Count == 0)
                             label1.Text = "Select the second point.";
                         if (prevPoints.Count == 1)
                             label1.Text = "Select the third point.";
@@ -377,17 +380,23 @@ namespace CG_Project3
                         break;
                 }
             }
-            prevMousePosition = new Point(x,y);
+            prevMousePosition = new Point(x, y);
             DrawShapes();
         }
 
         private void AACheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            foreach(IShape shape in Shapes)
+            foreach (IShape shape in Shapes)
             {
                 shape.AA = AACheckBox.Checked;
             }
             DrawShapes();
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Settings1.Default.Mode = comboBox1.SelectedIndex;
+            Settings1.Default.Save();
         }
     }
 }
