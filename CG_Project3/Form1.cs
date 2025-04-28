@@ -39,7 +39,6 @@ namespace CG_Project3
             numericLineWidth.Value = width;
             comboBox1.SelectedIndex = mode;
             label1.Text = "Select the first point.";
-            currentColor = Color.White;
             panel1.BackColor = currentColor;
             Shapes = new List<IShape>();
             /*Shapes.Add(new Line(new Point(400, 200), new Point(100, 50), Color.FromArgb(255, 0, 255, 0)));
@@ -401,7 +400,7 @@ namespace CG_Project3
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             Settings1.Default.Mode = comboBox1.SelectedIndex;
-            Settings1.Default.Color = this.currentColor;
+            Settings1.Default.Color = currentColor;
             Settings1.Default.Width = (int)numericLineWidth.Value;
             Settings1.Default.Save();
         }

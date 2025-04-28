@@ -37,17 +37,6 @@ namespace CG_Project3 {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Drawing.Color Color {
-            get {
-                return ((global::System.Drawing.Color)(this["Color"]));
-            }
-            set {
-                this["Color"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0")]
         public int Width {
             get {
@@ -55,6 +44,17 @@ namespace CG_Project3 {
             }
             set {
                 this["Width"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Drawing.Color Color {
+            get {
+                return ((global::System.Drawing.Color)(this["Color"]));
+            }
+            set {
+                this["Color"] = value;
             }
         }
     }
