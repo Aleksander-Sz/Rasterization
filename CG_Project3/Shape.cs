@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolTip;
 
 namespace CG_Project3
 {
@@ -741,7 +743,20 @@ namespace CG_Project3
     class PacMan : IShape // -----------------------------------------------------------
     {
         public int width { get; set; }
-        public Color color { get; set; }
+        private Color _color;
+        public Color color
+        {
+            get
+            {
+                return _color;
+            }
+            set
+            {
+                _color = value;
+                this.ab = new Line(this.center, this.b, _color);
+                this.ac = new Line(this.center, this.c, _color);
+            }
+        }
         public bool AA { get; set; }
         public Point center { get; set; }
         private int radius;
@@ -759,7 +774,7 @@ namespace CG_Project3
         private bool startAngleSmaller;
         public PacMan(Point a, Point b, Point c, Color color)
         {
-            this.color = color;
+            this._color = color;
             this.center = a;
             this.b = b;
             //this.c = c;
@@ -856,11 +871,18 @@ namespace CG_Project3
         }
         public void Move(int x, int y)
         {
-            ; // not implemented
+            center.X += x;
+            center.Y += y;
+            b.X += x;
+            b.Y += y;
+            c.X += x;
+            c.Y += y;
         }
         public List<Vertex> GetVertices()
         {
-            return new List<Vertex>(); // not implemented
+            List<Vertex> rPoints = new List<Vertex>();
+            rPoints.Add(new Vertex(center, this, Vertex.VertexType.Normal));
+            return rPoints;
         }
         private void PixelSet(byte[] pictureData, int x, int y, Color c)
         {
