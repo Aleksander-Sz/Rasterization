@@ -629,7 +629,7 @@ namespace CG_Project3
             Color.FromArgb(Convert.ToInt32(text.Split('|')[0].Split(',')[0], 16)),
             new List<Point>(),
             Int32.Parse(text.Split('|')[0].Split(',')[1]),
-            (text.Split('|')[0].Split(',')[2]=="C"))
+            (text.Split('|')[0].Split(',')[2] == "C"))
         {
             string[] pointsText = text.Split('|')[1].Split(',');
             for (int i = 0; i < pointsText.Length / 2; i++)
@@ -638,6 +638,12 @@ namespace CG_Project3
             }
             GenerateLines();
         }
+        /*public Polygon(string text)
+        {
+            string[] parts = text.Split(";");
+            string[] genParams = parts[0].Split(",");
+            string[] points
+        }*/
         private void GenerateLines()
         {
             //throw new Exception(points.Count.ToString());

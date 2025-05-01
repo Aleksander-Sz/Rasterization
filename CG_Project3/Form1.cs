@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using static System.Windows.Forms.LinkLabel;
@@ -15,6 +16,7 @@ namespace CG_Project3
         DateTime prevClick;
         Point prevMousePosition;
         Color backgroundColor;
+        LinkedList<string> changeLog;
         public Form1()
         {
             InitializeComponent();
@@ -44,12 +46,14 @@ namespace CG_Project3
             panel1.BackColor = currentColor;
             backgroundColor = Settings1.Default.BackgroundColor;
             Shapes = new List<IShape>();
+            changeLog = new LinkedList<string>();
             /*Shapes.Add(new Line(new Point(400, 200), new Point(100, 50), Color.FromArgb(255, 0, 255, 0)));
             Shapes.Add(new Line(new Point(600, 300), new Point(400, 50), Color.FromArgb(255, 255, 0, 0)));
             Shapes.Add(new ThickLine(new Point(0, 0), new Point(400, 50), 5, Color.FromArgb(255, 0, 0, 100)));
             Shapes.Add(new ThickLine(new Point(100, 100), new Point(100, 100), 15, Color.FromArgb(255, 0, 0, 100)));
             Shapes.Add(new Circle(new Point(500, 250), 30, Color.FromArgb(255, 100, 100, 100)));
             Shapes.Add(new AALine(new Point(100, 300), new Point(600,400),10,Color.FromArgb(255,255,0,255)));*/
+            //Shapes.Add(new Polygon("ff004000,21,C|187,165,170,333,351,211,633,376,618,42,\r\n"));
             DrawShapes();
         }
 
@@ -125,6 +129,7 @@ namespace CG_Project3
             openFileDialog.Filter = "Txt File|*.txt|Vector Image|*.vec|Any format|*.*";
             openFileDialog.Title = "Select an Image File";
 
+            string debugType = "N";
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 try
@@ -133,13 +138,14 @@ namespace CG_Project3
                     foreach (string line in File.ReadLines(openFileDialog.FileName))
                     {
                         string[] elements = line.Split(';');
+                        debugType = elements[0];
                         switch (elements[0][0])
                         {
                             case 'b':
-                                backgroundColor = Color.FromArgb(Convert.ToInt32(elements[1],16));
+                                backgroundColor = Color.FromArgb(Convert.ToInt32(elements[1], 16));
                                 break;
                             case 'a':
-                                AACheckBox.Checked = (elements[1][0] != '1');
+                                AACheckBox.Checked = (elements[1][0] == '1');
                                 AAChange();
                                 break;
                             case 'L':
@@ -159,14 +165,18 @@ namespace CG_Project3
                                 Shapes.Last().AA = AACheckBox.Checked;
                                 break;
                         }
+                        /*IShape shape = decodeShape(elements[0], elements[1]);
+                        if(shape!=null)
+                            Shapes.Add(shape);*/
                     }
                 }
                 catch (Exception exception)
                 {
-                    MessageBox.Show("Error loading the vector data: " + exception.Message);
+                    MessageBox.Show("Error loading the vector data (type: " + debugType + "): " + exception.Message);
                     return;
                 }
             }
+            AAChange();
             DrawShapes();
         }
 
@@ -441,6 +451,87 @@ namespace CG_Project3
                 backgroundColor = colorDialog1.Color;
                 DrawShapes();
             }
+        }
+        public enum ChangeType
+        {
+            Delete,
+            Add,
+            Edit
+        }
+        private void cashChange(IShape shape, ChangeType type)
+        {
+            string editString = "0";
+            int index = Shapes.IndexOf(shape);
+            switch(type)
+            {
+                case ChangeType.Delete:
+                    editString = "D";
+                    break;
+                case ChangeType.Add:
+                    editString = "A";
+                    break;
+                case ChangeType.Edit:
+                    editString = "E";
+                    break;
+            }
+            editString += "$";
+            editString += index.ToString();
+            editString += "$";
+            editString += shape.ToString();
+            changeLog.AddLast(editString);
+        }
+        private void undo()
+        {
+            string editString = changeLog.Last();
+            changeLog.RemoveLast();
+            string[] parts1 = editString.Split("$");
+            string shapeString = parts1[2];
+            string[] parts2 = shapeString.Split(";");
+            int index = Int32.Parse(parts1[1]);
+            IShape shape = decodeShape(parts2[0], parts2[1]);
+            switch (parts1[0][0])
+            {
+                case 'D':
+                    Shapes.Insert(index, shape);
+                    break;
+                case 'A':
+                    Shapes.RemoveAt(index);
+                    break;
+                case 'E':
+                    Shapes[index] = shape;
+                    break;
+            }
+        }
+        private IShape? decodeShape(string type, string shapeString)
+        {
+            IShape? shape = null;
+            switch (type[0])
+            {
+                case 'b':
+                    backgroundColor = Color.FromArgb(Convert.ToInt32(shapeString, 16));
+                    break;
+                case 'a':
+                    AACheckBox.Checked = (shapeString[0] != '1');
+                    //AAChange();
+                    break;
+                case 'L':
+                    shape = new Line(shapeString);
+                    break;
+                case 'T':
+                    shape = new ThickLine(shapeString);
+                    break;
+                case 'C':
+                    shape = new Circle(shapeString);
+                    break;
+                case 'P':
+                    shape = new Polygon(shapeString);
+                    break;
+                case 'A':
+                    shape = new AALine(shapeString);
+                    Shapes.Last().AA = AACheckBox.Checked;
+                    break;
+            }
+            return shape;
         }
     }
 }
