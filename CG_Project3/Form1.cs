@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.DirectoryServices;
 using System.Drawing;
 using System.Windows.Forms;
 using static System.Windows.Forms.LinkLabel;
@@ -33,8 +34,9 @@ namespace CG_Project3
             comboBox1.Items.Add("Change Thickness");
             comboBox1.Items.Add("Delete Shape");
             comboBox1.Items.Add("PacMan");
+            comboBox1.Items.Add("Rectangle");
             int mode = Settings1.Default.Mode;
-            if (mode < 0 || mode > 9)
+            if (mode < 0 || mode > 10)
                 mode = 0;
             currentColor = Settings1.Default.Color;
             int width = Settings1.Default.Width;
@@ -163,6 +165,9 @@ namespace CG_Project3
                             case 'A':
                                 Shapes.Add(new AALine(elements[1]));
                                 Shapes.Last().AA = AACheckBox.Checked;
+                                break;
+                            case 'R':
+                                Shapes.Add(new AARectangle(elements[1]));
                                 break;
                         }
                         /*IShape shape = decodeShape(elements[0], elements[1]);
@@ -299,9 +304,9 @@ namespace CG_Project3
                         }
                         break;
                     case 8: // delete
-                        foreach (IShape shape in Shapes)
+                        for (int i = 0; i < Shapes.Count; i++)
                         {
-                            foreach (Vertex vertex in shape.GetVertices())
+                            foreach (Vertex vertex in Shapes[i].GetVertices())
                             {
                                 dx = vertex.Point.X - x;
                                 dy = vertex.Point.Y - y;
@@ -325,6 +330,17 @@ namespace CG_Project3
                             label1.Text = "Select the second point.";
                         if (prevPoints.Count == 1)
                             label1.Text = "Select the third point.";
+                        prevPoints.Add(new Point(x, y));
+                        break;
+                    case 10:
+                        if (prevPoints.Count == 1)
+                        {
+                            Shapes.Add(new AARectangle(prevPoints[0],new Point(x, y), currentColor));
+                            prevPoints.Clear();
+                            label1.Text = "Select the first point.";
+                            break;
+                        }
+                        label1.Text = "Select the second point.";
                         prevPoints.Add(new Point(x, y));
                         break;
                 }
@@ -415,6 +431,11 @@ namespace CG_Project3
                         dx = x - activeVertex.Point.X;
                         dy = y - activeVertex.Point.Y;
                         activeVertex.Owner.Move(dx, dy);
+                        break;
+                    case Vertex.VertexType.Rectangle:
+                        activeVertex.Point.X = x;
+                        activeVertex.Point.Y = y;
+                        ((AARectangle)activeVertex.Owner).GenerateLines(activeVertex.Index);
                         break;
                 }
             }

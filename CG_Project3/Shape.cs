@@ -858,4 +858,88 @@ namespace CG_Project3
             return true;
         }
     }
+    internal class AARectangle : IShape // -----------------------------------------------------------
+    {
+        public List<Point> points;
+        public Color color { get; set; }
+        public int width { get; set; }
+        public bool AA { get; set; }
+        public List<AALine> lines { get; set; }
+        public AARectangle(Point a, Point b, Color color)
+        {
+            this.points = new List<Point>();
+            this.points.Add(a);
+            this.points.Add(null);
+            this.points.Add(b);
+            this.points.Add(null);
+            this.color = color;
+            this.width = 1;
+            this.lines = new List<AALine>();
+            this.GenerateLines();
+        }
+        public AARectangle(string text)
+        {
+            string[] elements = text.Split(',');
+            this.points = new List<Point>(4);
+            this.points[0] = new Point(Int32.Parse(elements[0]), Int32.Parse(elements[1]));
+            this.points[2] = new Point(Int32.Parse(elements[2]), Int32.Parse(elements[3]));
+            color = Color.FromArgb(Convert.ToInt32(elements[4], 16));
+            width = 1;
+            this.lines = new List<AALine>();
+            this.GenerateLines();
+        }
+        public void GenerateLines(int firstPoint = 2)
+        {
+            this.lines.Clear();
+            int otherPoint = (firstPoint + 2) % 4;
+            Point midpoint = new Point((points[firstPoint].X + points[otherPoint].X) / 2, (points[firstPoint].Y + points[otherPoint].Y) / 2);
+            int xOffset = points[firstPoint].X - midpoint.X;
+            int yOffset = points[firstPoint].Y - midpoint.Y;
+            points[(firstPoint + 1) % 4] = new Point(midpoint.X - yOffset, midpoint.Y + xOffset);
+            points[(otherPoint + 1) % 4] = new Point(midpoint.X + yOffset, midpoint.Y - xOffset);
+            for(int i = 0; i < 4; i++)
+            {
+                lines.Add(new AALine(points[i], points[(i+1)%4],this.width,this.color,false));
+            }
+        }
+        public void Draw(byte[] bitmap, int stride)
+        {
+            if (lines.Count!=4)
+                GenerateLines();
+            foreach (AALine line in lines)
+            {
+                line.Draw(bitmap, stride);
+            }
+        }
+        public override string ToString()
+        {
+            return "R;" + points[0].X.ToString() + "," + points[0].Y.ToString() + "," + points[2].X.ToString() + "," + points[2].Y.ToString() + "," + string.Format("{0:x6}", color.ToArgb());
+        }
+        private void PixelSet(byte[] pictureData, int i, Color c)
+        {
+            if (i < 0 || i + 2 >= pictureData.Length)
+                return;
+            pictureData[i] = (byte)c.B;
+            pictureData[i + 1] = (byte)c.G;
+            pictureData[i + 2] = (byte)c.R;
+        }
+        public List<Vertex> GetVertices()
+        {
+            List<Vertex> rPoints = new List<Vertex>();
+            for(int i = 0; i<4; i++)
+            {
+                rPoints.Add(new Vertex(points[i], this, Vertex.VertexType.Rectangle,i));
+            }
+            return rPoints;
+
+        }
+        public void Move(int x, int y)
+        {
+            foreach(Point point in points)
+            {
+                point.X += x;
+                point.Y += y;
+            }
+        }
+    }
 }
