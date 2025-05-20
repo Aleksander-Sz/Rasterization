@@ -83,16 +83,18 @@ namespace CG_Project3
                 shape.Draw(ImageBytes, stride);
             }
             // diagnostics code, for displaying vertices as red pixels
-            /*foreach (IShape shape in Shapes)
+            foreach (IShape shape in Shapes)
             {
                 foreach (Vertex vertex in shape.GetVertices())
                 {
                     int i = vertex.Point.Y * stride + vertex.Point.X * 3;
+                    if (i > ImageBytes.Length)
+                        continue;
                     ImageBytes[i] = (byte)0;
                     ImageBytes[i + 1] = (byte)0;
                     ImageBytes[i + 2] = (byte)255;
                 }
-            }*/
+            }
             Image = Program.ByteArrayToImage(ImageBytes, width, height, stride);
             pictureBox.Image = Image;
         }
@@ -456,6 +458,14 @@ namespace CG_Project3
                         activeVertex.Point.X = x;
                         activeVertex.Point.Y = y;
                         ((AARectangle)activeVertex.Owner).GenerateLines(activeVertex.Index);
+                        break;
+                    case Vertex.VertexType.LineCenterRectangle:
+                        activeVertex.Point.X = x;
+                        activeVertex.Point.Y = y;
+                        dx = x - activeVertex.Point.X;
+                        dy = y - activeVertex.Point.Y;
+                        ((AARectangle)activeVertex.Owner).lines[activeVertex.Index].Move(dx, dy);
+                        ((AARectangle)activeVertex.Owner).GenerateLines(activeVertex.Index + 4);
                         break;
                 }
             }

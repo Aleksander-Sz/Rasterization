@@ -975,12 +975,30 @@ namespace CG_Project3
         public void GenerateLines(int firstPoint = 2)
         {
             this.lines.Clear();
-            int otherPoint = (firstPoint + 2) % 4;
-            Point midpoint = new Point((points[firstPoint].X + points[otherPoint].X) / 2, (points[firstPoint].Y + points[otherPoint].Y) / 2);
-            int xOffset = points[firstPoint].X - midpoint.X;
-            int yOffset = points[firstPoint].Y - midpoint.Y;
-            points[(firstPoint + 1) % 4] = new Point(points[firstPoint].X, points[otherPoint].Y);
-            points[(otherPoint + 1) % 4] = new Point(points[otherPoint].X, points[firstPoint].Y);
+            if(firstPoint<4)
+            {
+                int otherPoint = (firstPoint + 2) % 4;
+                points[(firstPoint + 1) % 4] = new Point(points[firstPoint].X, points[otherPoint].Y);
+                points[(otherPoint + 1) % 4] = new Point(points[otherPoint].X, points[firstPoint].Y);
+            }
+            else
+            {
+                firstPoint -= 4;
+                int otherPoint = (firstPoint + 1) % 4;
+                otherPoint = (firstPoint + 1) % 4;
+                if (points[firstPoint].X == points[otherPoint].X)
+                {
+                    // vertical line
+                    points[(firstPoint + 2) % 4].Y = points[otherPoint].Y;
+                    points[(firstPoint + 3) % 4].Y = points[firstPoint].Y;
+                }
+                else
+                {
+                    // horizonal line
+                    points[(firstPoint + 2) % 4].X = points[otherPoint].X;
+                    points[(firstPoint + 3) % 4].X = points[firstPoint].X;
+                }
+            }
             for (int i = 0; i < 4; i++)
             {
                 lines.Add(new AALine(points[i], points[(i + 1) % 4], this.width, this.color, false));
@@ -1013,6 +1031,7 @@ namespace CG_Project3
             for (int i = 0; i < 4; i++)
             {
                 rPoints.Add(new Vertex(points[i], this, Vertex.VertexType.Rectangle, i));
+                rPoints.Add(new Vertex(lines[i].midpoint, this, Vertex.VertexType.LineCenterRectangle, i));
             }
             return rPoints;
 

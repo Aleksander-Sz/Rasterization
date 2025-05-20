@@ -25,7 +25,8 @@ namespace CG_Project3
             Center,
             Circumference,
             Square,
-            Rectangle
+            Rectangle,
+            LineCenterRectangle
         }
     }
 }
