@@ -170,6 +170,9 @@ namespace CG_Project3
                             case 'S':
                                 Shapes.Add(new AASquare(elements[1]));
                                 break;
+                            case 'R':
+                                Shapes.Add(new AARectangle(elements[1]));
+                                break;
                         }
                         /*IShape shape = decodeShape(elements[0], elements[1]);
                         if(shape!=null)
@@ -344,6 +347,17 @@ namespace CG_Project3
                         label1.Text = "Select the second point.";
                         prevPoints.Add(new Point(x, y));
                         break;
+                    case 11:  // Rectangle
+                        if (prevPoints.Count == 1)
+                        {
+                            Shapes.Add(new AARectangle(prevPoints[0], new Point(x, y), currentColor));
+                            prevPoints.Clear();
+                            label1.Text = "Select the first point.";
+                            break;
+                        }
+                        label1.Text = "Select the second point.";
+                        prevPoints.Add(new Point(x, y));
+                        break;
                 }
                 DrawShapes();
             }
@@ -433,10 +447,15 @@ namespace CG_Project3
                         dy = y - activeVertex.Point.Y;
                         activeVertex.Owner.Move(dx, dy);
                         break;
-                    case Vertex.VertexType.Rectangle:
+                    case Vertex.VertexType.Square:
                         activeVertex.Point.X = x;
                         activeVertex.Point.Y = y;
                         ((AASquare)activeVertex.Owner).GenerateLines(activeVertex.Index);
+                        break;
+                    case Vertex.VertexType.Rectangle:
+                        activeVertex.Point.X = x;
+                        activeVertex.Point.Y = y;
+                        ((AARectangle)activeVertex.Owner).GenerateLines(activeVertex.Index);
                         break;
                 }
             }

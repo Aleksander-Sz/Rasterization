@@ -24,6 +24,7 @@ namespace CG_Project3
             Normal,
             Center,
             Circumference,
+            Square,
             Rectangle
         }
     }
