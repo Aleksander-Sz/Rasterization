@@ -858,14 +858,14 @@ namespace CG_Project3
             return true;
         }
     }
-    internal class AARectangle : IShape // -----------------------------------------------------------
+    internal class AASquare : IShape // -----------------------------------------------------------
     {
         public List<Point> points;
         public Color color { get; set; }
         public int width { get; set; }
         public bool AA { get; set; }
         public List<AALine> lines { get; set; }
-        public AARectangle(Point a, Point b, Color color)
+        public AASquare(Point a, Point b, Color color)
         {
             this.points = new List<Point>();
             this.points.Add(a);
@@ -877,7 +877,7 @@ namespace CG_Project3
             this.lines = new List<AALine>();
             this.GenerateLines();
         }
-        public AARectangle(string text)
+        public AASquare(string text)
         {
             string[] elements = text.Split(',');
             this.points = new List<Point>(4);
@@ -913,7 +913,7 @@ namespace CG_Project3
         }
         public override string ToString()
         {
-            return "R;" + points[0].X.ToString() + "," + points[0].Y.ToString() + "," + points[2].X.ToString() + "," + points[2].Y.ToString() + "," + string.Format("{0:x6}", color.ToArgb());
+            return "S;" + points[0].X.ToString() + "," + points[0].Y.ToString() + "," + points[2].X.ToString() + "," + points[2].Y.ToString() + "," + string.Format("{0:x6}", color.ToArgb());
         }
         private void PixelSet(byte[] pictureData, int i, Color c)
         {

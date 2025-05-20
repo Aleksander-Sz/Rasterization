@@ -34,9 +34,10 @@ namespace CG_Project3
             comboBox1.Items.Add("Change Thickness");
             comboBox1.Items.Add("Delete Shape");
             comboBox1.Items.Add("PacMan");
+            comboBox1.Items.Add("Square");
             comboBox1.Items.Add("Rectangle");
             int mode = Settings1.Default.Mode;
-            if (mode < 0 || mode > 10)
+            if (mode < 0 || mode > 11)
                 mode = 0;
             currentColor = Settings1.Default.Color;
             int width = Settings1.Default.Width;
@@ -166,8 +167,8 @@ namespace CG_Project3
                                 Shapes.Add(new AALine(elements[1]));
                                 Shapes.Last().AA = AACheckBox.Checked;
                                 break;
-                            case 'R':
-                                Shapes.Add(new AARectangle(elements[1]));
+                            case 'S':
+                                Shapes.Add(new AASquare(elements[1]));
                                 break;
                         }
                         /*IShape shape = decodeShape(elements[0], elements[1]);
@@ -332,10 +333,10 @@ namespace CG_Project3
                             label1.Text = "Select the third point.";
                         prevPoints.Add(new Point(x, y));
                         break;
-                    case 10:
+                    case 10:  // Square
                         if (prevPoints.Count == 1)
                         {
-                            Shapes.Add(new AARectangle(prevPoints[0],new Point(x, y), currentColor));
+                            Shapes.Add(new AASquare(prevPoints[0],new Point(x, y), currentColor));
                             prevPoints.Clear();
                             label1.Text = "Select the first point.";
                             break;
@@ -435,7 +436,7 @@ namespace CG_Project3
                     case Vertex.VertexType.Rectangle:
                         activeVertex.Point.X = x;
                         activeVertex.Point.Y = y;
-                        ((AARectangle)activeVertex.Owner).GenerateLines(activeVertex.Index);
+                        ((AASquare)activeVertex.Owner).GenerateLines(activeVertex.Index);
                         break;
                 }
             }
