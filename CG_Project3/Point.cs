@@ -13,4 +13,9 @@ internal class Point
         X = x;
         Y = y;
     }
+    public Point(Point p)
+    {
+        X = p.X;
+        Y = p.Y;
+    }
 }

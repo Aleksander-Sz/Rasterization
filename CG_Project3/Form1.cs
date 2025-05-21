@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Diagnostics.SymbolStore;
 using System.DirectoryServices;
 using System.Drawing;
 using System.Windows.Forms;
@@ -18,6 +19,7 @@ namespace CG_Project3
         Point prevMousePosition;
         Color backgroundColor;
         LinkedList<string> changeLog;
+        Polygon polygonToClip;
         public Form1()
         {
             InitializeComponent();
@@ -36,8 +38,10 @@ namespace CG_Project3
             comboBox1.Items.Add("PacMan");
             comboBox1.Items.Add("Square");
             comboBox1.Items.Add("Rectangle");
+            comboBox1.Items.Add("Clip a polygon to a rectangle");
+            comboBox1.Items.Add("Weird Fill");
             int mode = Settings1.Default.Mode;
-            if (mode < 0 || mode > 11)
+            if (mode < 0 || mode > 13)
                 mode = 0;
             currentColor = Settings1.Default.Color;
             int width = Settings1.Default.Width;
@@ -359,6 +363,48 @@ namespace CG_Project3
                         }
                         label1.Text = "Select the second point.";
                         prevPoints.Add(new Point(x, y));
+                        break;
+                    case 12: // clip polygon to rectangle
+                        IShape selectedShape = null;
+                        for (int i = 0; i < Shapes.Count; i++)
+                        {
+                            foreach (Vertex vertex in Shapes[i].GetVertices())
+                            {
+                                dx = vertex.Point.X - x;
+                                dy = vertex.Point.Y - y;
+                                if (dx * dx + dy * dy < CLICK_DISTANCE)
+                                {
+                                    selectedShape = vertex.Owner;
+                                }
+                            }
+                        }
+                        if (selectedShape == null)
+                            return;
+                        if (prevPoints.Count == 1)
+                        {
+                            if(selectedShape is AARectangle)
+                            {
+                                polygonToClip.ClipTo = (AARectangle)selectedShape;
+                                label1.Text = "Select the first point";
+                            }
+                            else
+                            {
+                                prevPoints.Clear();
+                                label1.Text = "Select the Polygon to clip";
+                            }
+                        }
+                        else
+                        {
+                            if(selectedShape is Polygon)
+                            {
+                                prevPoints.Add(new Point(x, y));
+                                polygonToClip = (Polygon)selectedShape;
+                                label1.Text = "Select the rectangle to clip to";
+                            }
+                        }
+                        break;
+                    case 13:
+                        Shapes.Add(new WeirdFill(new Point(x, y), currentColor));
                         break;
                 }
                 DrawShapes();

@@ -614,6 +614,7 @@ namespace CG_Project3
                 GenerateLines();
             }
         }
+        public AARectangle ClipTo;
         public Polygon(Color color, List<Point> points, int width = 1, bool closed = true, bool aa = false)
         {
             this._color = color;
@@ -1043,6 +1044,66 @@ namespace CG_Project3
                 point.X += x;
                 point.Y += y;
             }
+        }
+    }
+    internal class WeirdFill : IShape // -----------------------------------------------------------
+    {
+        public Point Origin;
+        public Color color { get; set; }
+        public int width { get; set; } // unused
+        public bool AA { get; set; }  //  unused
+        public WeirdFill(Point _origin, Color _color)
+        {
+            Origin = _origin;
+            color = _color;
+        }
+        public void Draw(byte[] bitmap, int stride)
+        {
+            Queue<Point> points = new Queue<Point>();
+            points.Enqueue(new Point(Origin));
+            Color originalColor = getPixel(bitmap, stride, Origin);
+            Point point;
+            while(points.Count>0)
+            {
+                point = new Point(points.Dequeue());
+                if (getPixel(bitmap, stride, point).ToArgb() != originalColor.ToArgb())
+                    continue;
+                setPixel(bitmap, stride, point, color);
+                point.X--;
+                if((point.X>=0)&&(getPixel(bitmap,stride,point).ToArgb()==originalColor.ToArgb()))
+                    points.Enqueue(new Point(point));
+                point.X++;
+                point.Y++;
+                if ((point.Y < bitmap.Length / stride)&&(getPixel(bitmap, stride, point).ToArgb() == originalColor.ToArgb()))
+                    points.Enqueue(new Point(point));
+            }
+        }
+        Color getPixel(byte[] bitmap, int stride, Point point)
+        {
+            int i = point.X * 3 + point.Y * stride;
+            if ((i<0)||(i + 2>= bitmap.Length))
+                return Color.Beige; // error
+            return Color.FromArgb(bitmap[i+2], bitmap[i+1], bitmap[i]);
+        }
+        void setPixel(byte[] bitmap, int stride, Point point, Color color)
+        {
+            int i = point.X * 3 + point.Y * stride;
+            if ((i<0)||(i + 2 >= bitmap.Length))
+                return;
+            bitmap[i] = (byte)color.B;
+            bitmap[i + 1] = (byte)color.G;
+            bitmap[i + 2] = (byte)color.R;
+        }
+        public void Move(int x, int y)
+        {
+            Origin.X += x;
+            Origin.Y += y;
+        }
+        public List<Vertex> GetVertices()
+        {
+            List<Vertex> list = new List<Vertex>();
+            list.Add(new Vertex(Origin,this,Vertex.VertexType.Normal));
+            return list;
         }
     }
 }
