@@ -568,6 +568,7 @@ namespace CG_Project3
         }
         private int _width;
         private Color _color;
+        public Color infil;
         public int width
         {
             get
