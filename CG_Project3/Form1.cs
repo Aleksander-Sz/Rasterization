@@ -430,6 +430,7 @@ namespace CG_Project3
                                 if ((castPolygon.infill == currentColor) || (!castPolygon.isFilled))
                                     castPolygon.isFilled = !castPolygon.isFilled;
                                 castPolygon.infill = currentColor;
+                                castPolygon.image = null;
                             }
                         }
                         break;

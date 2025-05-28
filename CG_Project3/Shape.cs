@@ -587,7 +587,7 @@ namespace CG_Project3
             }
         }
         private Point imageCorner;
-        public Bitmap image;
+        public Bitmap? image;
         public byte[] imageData;
         public int imageStride;
         public bool isFilled;
@@ -813,7 +813,9 @@ namespace CG_Project3
             if (imageX < 0 || imageY < 0 || imageX >= image.Width || imageY >= image.Height)
                 return;
 
-            int i = (imageX * 3 + stride * imageY);
+            int i = (imageX * 3 + this.imageStride * imageY);
+            if (i < 0 || i + 2 >= imageData.Length)
+                return;
             Color c = Color.FromArgb(this.imageData[i+2], this.imageData[i+1], this.imageData[i]);
 
             i = (x * 3 + stride * y);
