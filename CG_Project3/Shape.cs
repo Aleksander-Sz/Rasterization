@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -568,7 +569,28 @@ namespace CG_Project3
         }
         private int _width;
         private Color _color;
-        public Color infil;
+        public Color infill;
+        private string _imagePath;
+        public string imagePath
+        {
+            get
+            {
+                return _imagePath;
+            }
+            set
+            {
+                _imagePath = value;
+                Bitmap bmp = new Bitmap(value);
+                this.image = bmp;
+                this.imageData = Program.ImageToByteArray(bmp, out int stride);
+                this.imageStride = stride;
+            }
+        }
+        private Point imageCorner;
+        public Bitmap image;
+        public byte[] imageData;
+        public int imageStride;
+        public bool isFilled;
         public int width
         {
             get
@@ -625,6 +647,7 @@ namespace CG_Project3
             this.midpoints = new List<Point>();
             this._closed = closed;
             this.AA = aa;
+            this.isFilled = false;
             GenerateLines();
         }
         public Polygon(string text) : this(
@@ -679,6 +702,12 @@ namespace CG_Project3
         }
         public void Draw(byte[] bitmap, int stride)
         {
+            //fill
+            if(isFilled)
+            {
+                this.imageCorner = GetCorner();
+                Fill(bitmap, stride);
+            }
             if (_closed && lines.Count != points.Count)
                 GenerateLines();
             if (!_closed && lines.Count != points.Count - 1)
@@ -688,6 +717,114 @@ namespace CG_Project3
                 line.Draw(bitmap, stride);
             }
         }
+        public void Fill(byte[] bitmap, int stride)
+        {
+            List<Point> sortedPoints = points.OrderBy(p => p.Y).ToList();
+            for (int i = 1; i < sortedPoints.Count - 1; i++)
+            {
+                FillTriangle(bitmap, stride, sortedPoints[0], sortedPoints[i], sortedPoints[i + 1], infill);
+            }
+
+        }
+        void FillTriangle(byte[] bitmap, int stride, Point p0, Point p1, Point p2, Color color)
+        {
+
+            if (p1.Y < p0.Y) (p0, p1) = (p1, p0);
+            if (p2.Y < p0.Y) (p0, p2) = (p2, p0);
+            if (p2.Y < p1.Y) (p1, p2) = (p2, p1);
+
+            if (p1.Y == p2.Y)
+            {
+                FillFlatBottomTriangle(bitmap, stride, p0, p1, p2, color);
+            }
+            else if (p0.Y == p1.Y)
+            {
+                FillFlatTopTriangle(bitmap, stride, p0, p1, p2, color);
+            }
+            else
+            {
+                // General triangle: split into two
+                float t = (float)(p1.Y - p0.Y) / (p2.Y - p0.Y);
+                int x = (int)(p0.X + t * (p2.X - p0.X));
+                Point p3 = new Point(x, p1.Y);
+                FillFlatBottomTriangle(bitmap, stride, p0, p1, p3, color);
+                FillFlatTopTriangle(bitmap, stride, p1, p3, p2, color);
+            }
+        }
+        void FillFlatBottomTriangle(byte[] bitmap, int stride, Point p0, Point p1, Point p2, Color color)
+        {
+            float invslope1 = (float)(p1.X - p0.X) / (p1.Y - p0.Y);
+            float invslope2 = (float)(p2.X - p0.X) / (p2.Y - p0.Y);
+
+            float curx1 = p0.X;
+            float curx2 = p0.X;
+
+            for (int y = p0.Y; y <= p1.Y; y++)
+            {
+                int startX = (int)Math.Round(curx1);
+                int endX = (int)Math.Round(curx2);
+                if (startX > endX) (startX, endX) = (endX, startX);
+                for (int x = startX; x <= endX; x++)
+                    PixelSet(bitmap, stride, x, y);
+
+                curx1 += invslope1;
+                curx2 += invslope2;
+            }
+        }
+        void FillFlatTopTriangle(byte[] bitmap, int stride, Point p0, Point p1, Point p2, Color color)
+        {
+            float invslope1 = (float)(p2.X - p0.X) / (p2.Y - p0.Y);
+            float invslope2 = (float)(p2.X - p1.X) / (p2.Y - p1.Y);
+
+            float curx1 = p2.X;
+            float curx2 = p2.X;
+
+            for (int y = p2.Y; y > p0.Y; y--)
+            {
+                int startX = (int)Math.Round(curx1);
+                int endX = (int)Math.Round(curx2);
+                if (startX > endX) (startX, endX) = (endX, startX);
+                for (int x = startX; x <= endX; x++)
+                    PixelSet(bitmap, stride, x, y);
+
+                curx1 -= invslope1;
+                curx2 -= invslope2;
+            }
+        }
+        private void PixelSet(byte[] pictureData, int stride, int x, int y)
+        {
+            if(image!=null)
+            {
+                DrawImagePixel(pictureData, stride, x, y, imageCorner.X, imageCorner.Y);
+                return;
+            }
+            int i = (x * 3 + stride * y);
+            if (i < 0 || i + 2 >= pictureData.Length)
+                return;
+            pictureData[i] = (byte)this.infill.B;
+            pictureData[i + 1] = (byte)this.infill.G;
+            pictureData[i + 2] = (byte)this.infill.R;
+        }
+        private void DrawImagePixel(byte[] pictureData, int stride, int x, int y, int offsetX, int offsetY)
+        {
+            int imageX = x - offsetX;
+            int imageY = y - offsetY;
+
+            if (imageX < 0 || imageY < 0 || imageX >= image.Width || imageY >= image.Height)
+                return;
+
+            int i = (imageX * 3 + stride * imageY);
+            Color c = Color.FromArgb(this.imageData[i+2], this.imageData[i+1], this.imageData[i]);
+
+            i = (x * 3 + stride * y);
+            if (i < 0 || i + 2 >= pictureData.Length)
+                return;
+
+            pictureData[i] = c.B;
+            pictureData[i + 1] = c.G;
+            pictureData[i + 2] = c.R;
+        }
+
         public void Add(Point point)
         {
             points.Add(point);
@@ -718,6 +855,19 @@ namespace CG_Project3
                 point.Y += y;
             }
             GenerateLines();
+        }
+        Point GetCorner()
+        {
+            Rectangle boundingBox = GetBoundingBox(points);
+            return new Point(boundingBox.X,boundingBox.Y);
+        }
+        Rectangle GetBoundingBox(List<Point> pts)
+        {
+            int minX = pts.Min(p => p.X);
+            int minY = pts.Min(p => p.Y);
+            int maxX = pts.Max(p => p.X);
+            int maxY = pts.Max(p => p.Y);
+            return new Rectangle(minX, minY, maxX - minX + 1, maxY - minY + 1);
         }
     }
     class PacMan : IShape // -----------------------------------------------------------

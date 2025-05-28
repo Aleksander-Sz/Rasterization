@@ -40,8 +40,10 @@ namespace CG_Project3
             comboBox1.Items.Add("Rectangle");
             comboBox1.Items.Add("Clip a polygon to a rectangle");
             comboBox1.Items.Add("Weird Fill");
+            comboBox1.Items.Add("Fill polygon");
+            comboBox1.Items.Add("Fill polygon with an image");
             int mode = Settings1.Default.Mode;
-            if (mode < 0 || mode > 13)
+            if (mode < 0 || mode > 15)
                 mode = 0;
             currentColor = Settings1.Default.Color;
             int width = Settings1.Default.Width;
@@ -405,6 +407,63 @@ namespace CG_Project3
                         break;
                     case 13:
                         Shapes.Add(new WeirdFill(new Point(x, y), currentColor));
+                        break;
+                    case 14:
+                        {
+                            IShape selectedPolygon = null;
+                            for (int i = 0; i < Shapes.Count; i++)
+                            {
+                                foreach (Vertex vertex in Shapes[i].GetVertices())
+                                {
+                                    dx = vertex.Point.X - x;
+                                    dy = vertex.Point.Y - y;
+                                    if (dx * dx + dy * dy < CLICK_DISTANCE)
+                                    {
+                                        if (vertex.Owner is Polygon)
+                                            selectedPolygon = vertex.Owner;
+                                    }
+                                }
+                            }
+                            if (selectedPolygon != null)
+                            {
+                                Polygon castPolygon = (Polygon)selectedPolygon;
+                                if ((castPolygon.infill == currentColor) || (!castPolygon.isFilled))
+                                    castPolygon.isFilled = !castPolygon.isFilled;
+                                castPolygon.infill = currentColor;
+                            }
+                        }
+                        break;
+                    case 15:
+                        {
+                            IShape selectedPolygon = null;
+                            for (int i = 0; i < Shapes.Count; i++)
+                            {
+                                foreach (Vertex vertex in Shapes[i].GetVertices())
+                                {
+                                    dx = vertex.Point.X - x;
+                                    dy = vertex.Point.Y - y;
+                                    if (dx * dx + dy * dy < CLICK_DISTANCE)
+                                    {
+                                        if (vertex.Owner is Polygon)
+                                            selectedPolygon = vertex.Owner;
+                                    }
+                                }
+                            }
+                            if (selectedPolygon != null)
+                            {
+                                Polygon castPolygon = (Polygon)selectedPolygon;
+                                castPolygon.isFilled = true;
+                                OpenFileDialog ofd = new OpenFileDialog();
+                                ofd.Filter = "Image Files (*.bmp;*.jpg;*.png)|*.bmp;*.jpg;*.png";
+                                if (ofd.ShowDialog() == DialogResult.OK)
+                                {
+                                    Bitmap bmp = new Bitmap(ofd.FileName);
+                                    castPolygon.imagePath = ofd.FileName;
+                                    //castPolygon.imageData = Program.ImageToByteArray(bmp, out int stride);
+                                    //castPolygon.imageStride = stride;
+                                }
+                            }
+                        }
                         break;
                 }
                 DrawShapes();
